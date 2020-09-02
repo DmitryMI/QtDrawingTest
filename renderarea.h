@@ -1,7 +1,7 @@
 #ifndef RENDERAREA_H
 #define RENDERAREA_H
 
-#include "pointpair.h"
+#include "intpair.h"
 
 #include <QWidget>
 
@@ -18,7 +18,7 @@ public:
 
 	void DrawGraphNode(int x, int y);
 
-	void DrawGraphEdge(int x1, int y1, int x2, int y2);
+	void DrawGraphEdge(int nodeIndex1, int nodeIndex2);
 
 protected:
 	void paintEvent(QPaintEvent *event) override;
@@ -29,7 +29,7 @@ protected:
 
 private:
 	QVector<QPoint> *graphNodesList;
-	QVector<PointPair> *graphEdgesList;
+	QVector<IntPair> *graphEdgesList;
 
 	int prevSelectedNode = -1;
 

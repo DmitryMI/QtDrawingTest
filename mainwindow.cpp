@@ -24,7 +24,7 @@ void MainWindow::on_startButton_clicked()
 {
 	renderArea->DrawGraphNode(100, 100);
 	renderArea->DrawGraphNode(200, 200);
-	renderArea->DrawGraphEdge(100, 100, 200, 200);
+	renderArea->DrawGraphEdge(0, 1);
 
 	renderArea->update();
 }

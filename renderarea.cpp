@@ -16,7 +16,7 @@
 RenderArea::RenderArea(QWidget *parent) : QWidget(parent)
 {
 	graphNodesList = new QVector<QPoint>();
-	graphEdgesList = new QVector<PointPair>();
+	graphEdgesList = new QVector<IntPair>();
 	setMouseTracking(true);
 }
 
@@ -32,9 +32,9 @@ void RenderArea::DrawGraphNode(int x, int y)
 	graphNodesList->push_back(nodeCenter);
 }
 
-void RenderArea::DrawGraphEdge(int x1, int y1, int x2, int y2)
+void RenderArea::DrawGraphEdge(int nodeIndex1, int nodeIndex2)
 {
-	PointPair pair = PointPair(x1, y1, x2, y2);
+	IntPair pair = IntPair(nodeIndex1, nodeIndex2);
 	graphEdgesList->push_back(pair);
 }
 
@@ -71,9 +71,7 @@ void RenderArea::mouseReleaseEvent(QMouseEvent* event)
 			}
 			else if(selectedNodeIndex != -1 )
 			{
-				QPoint prevCenter = graphNodesList->at(prevSelectedNode);
-				QPoint curCenter = graphNodesList->at(selectedNodeIndex);
-				DrawGraphEdge(prevCenter.x(), prevCenter.y(), curCenter.x(), curCenter.y());
+				DrawGraphEdge(prevSelectedNode, selectedNodeIndex);
 				prevSelectedNode = -1;
 			}
 		}
@@ -111,10 +109,14 @@ void RenderArea::paintEdges()
 		painter->setPen(edgesPen);
 		for(int i = 0; i < graphEdgesList->length(); i++)
 		{
-			PointPair pointerPair = graphEdgesList->at(i);
-			QPoint start = pointerPair.getStart();
-			QPoint end = pointerPair.getEnd();
-			painter->drawLine(start, end);
+			IntPair pointerPair = graphEdgesList->at(i);
+			int start = pointerPair.getStart();
+			int end = pointerPair.getEnd();
+
+			QPoint startPos = graphNodesList->at(start);
+			QPoint endPos = graphNodesList->at(end);
+
+			painter->drawLine(startPos, endPos);
 		}
 
 	} // *** Shapes rendering ends here ***
