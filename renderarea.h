@@ -25,11 +25,21 @@ protected:
 
 	void mouseReleaseEvent(QMouseEvent* event) override;
 
+	void mouseMoveEvent(QMouseEvent *event) override;
+
 private:
 	QVector<QPoint> *graphNodesList;
 	QVector<PointPair> *graphEdgesList;
 
-	QPoint *prevRightClick = nullptr;
+	int prevSelectedNode = -1;
+
+	void paintEdges();
+	void paintNodes();
+	void paintRoutine();
+
+	int getNodeOnPointIndex(int x, int y);
+
+	int hoveredNodeIndex = -1;
 
 signals:
 
