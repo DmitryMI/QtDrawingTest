@@ -1,6 +1,7 @@
 #ifndef RENDERAREA_H
 #define RENDERAREA_H
 
+#include "graph.h"
 #include "intpair.h"
 
 #include <QWidget>
@@ -19,6 +20,9 @@ public:
 	void DrawGraphNode(int x, int y);
 
 	void DrawGraphEdge(int nodeIndex1, int nodeIndex2);
+
+	// User must deallocate memory mannually for the returned object
+	Graph* GetGraph();
 
 protected:
 	void paintEvent(QPaintEvent *event) override;
@@ -40,6 +44,9 @@ private:
 	int getNodeOnPointIndex(int x, int y);
 
 	int hoveredNodeIndex = -1;
+
+	int startNodeIndex = -1;
+	int endNodeIndex = -1;
 
 signals:
 

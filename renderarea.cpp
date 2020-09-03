@@ -50,6 +50,8 @@ void RenderArea::mouseReleaseEvent(QMouseEvent* event)
 	int x = event->x();
 	int y = event->y();
 
+	int nodeOnPointIndex = getNodeOnPointIndex(x, y);
+
 	Qt::MouseButton button = event->button();
 
 	switch(button)
@@ -60,11 +62,11 @@ void RenderArea::mouseReleaseEvent(QMouseEvent* event)
 	case Qt::MouseButton::RightButton:
 		if(prevSelectedNode == -1)
 		{
-			prevSelectedNode = getNodeOnPointIndex(x, y);
+			prevSelectedNode = nodeOnPointIndex;
 		}
 		else
 		{
-			int selectedNodeIndex = getNodeOnPointIndex(x, y);
+			int selectedNodeIndex = nodeOnPointIndex;
 			if(selectedNodeIndex == prevSelectedNode)
 			{
 				prevSelectedNode = -1;
@@ -76,6 +78,33 @@ void RenderArea::mouseReleaseEvent(QMouseEvent* event)
 			}
 		}
 		break;
+	case Qt::MouseButton::MiddleButton:
+
+		if(nodeOnPointIndex == -1)
+		{
+			startNodeIndex = -1;
+			endNodeIndex = -1;
+		}
+		else if(nodeOnPointIndex == startNodeIndex || nodeOnPointIndex == endNodeIndex)
+		{
+			// Do nothing
+		}
+		else
+		{
+			if(startNodeIndex == -1)
+			{
+				startNodeIndex = nodeOnPointIndex;
+			}
+			else if(endNodeIndex == -1)
+			{
+				endNodeIndex = nodeOnPointIndex;
+			}
+			else
+			{
+				startNodeIndex = nodeOnPointIndex;
+				endNodeIndex = -1;
+			}
+		}
 	default:
 		asm("nop");
 	}
@@ -134,12 +163,20 @@ void RenderArea::paintNodes()
 	// Setting brush to Solid style. No graphical artifacts like transperency will be present
 	// Brush is used for FILLING shapes. Filled graph nodes depend on this
 	QBrush nodesFillingBrush = QBrush();
-	nodesFillingBrush.setColor(QColor::fromRgb(100, 255, 100));
+	nodesFillingBrush.setColor(QColor::fromRgb(100, 100, 100));
 	nodesFillingBrush.setStyle(Qt::BrushStyle::SolidPattern);
 
 	QBrush hoveredNodeBrush = QBrush();
 	hoveredNodeBrush.setColor(QColor::fromRgb(100, 100, 255));
 	hoveredNodeBrush.setStyle(Qt::BrushStyle::SolidPattern);
+
+	QBrush startNodeBrush = QBrush();
+	startNodeBrush.setColor(QColor::fromRgb(100, 255, 100));
+	startNodeBrush.setStyle(Qt::BrushStyle::SolidPattern);
+
+	QBrush endNodeBrush = QBrush();
+	endNodeBrush.setColor(QColor::fromRgb(255, 100, 100));
+	endNodeBrush.setStyle(Qt::BrushStyle::SolidPattern);
 
 	// Setting outlining pen
 	// Pen is used for DRAWING BORDERS AND LINES. Outlining depends on this
@@ -164,6 +201,14 @@ void RenderArea::paintNodes()
 			if(i == hoveredNodeIndex || i == prevSelectedNode)
 			{
 				painter->setBrush(hoveredNodeBrush);
+			}
+			else if(i == startNodeIndex)
+			{
+				painter->setBrush(startNodeBrush);
+			}
+			else if(i == endNodeIndex)
+			{
+				painter->setBrush(endNodeBrush);
 			}
 			else
 			{
@@ -202,4 +247,22 @@ int RenderArea::getNodeOnPointIndex(int x, int y)
 		}
 	}
 	return -1;
+}
+
+Graph *RenderArea::GetGraph()
+{
+	Graph *graph = new Graph();
+
+	for(int i = 0; i < graphNodesList->length(); i++)
+	{
+		graph->AddNode(nullptr);
+	}
+
+	for(int i = 0; i < graphEdgesList->length(); i++)
+	{
+		IntPair pair = graphEdgesList->at(i);
+		graph->AddConnectionByIndex(pair.getStart(), pair.getEnd());
+	}
+
+	return graph;
 }
