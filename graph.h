@@ -1,10 +1,11 @@
 #ifndef GRAPH_H
 #define GRAPH_H
 
-#include "graphnode.h"
+#include "GraphNode.h"
 
 #include <qvector.h>
 
+template <class T>
 class Graph
 {
 public:
@@ -12,9 +13,9 @@ public:
 
 	~Graph();
 
-	// Returns unique key of created GraphNode
-	GraphNode* AddNode();
-	GraphNode* AddNode(void* data);
+	// Returns unique key of created GraphNode<T>
+	GraphNode<T>* AddNode();
+	GraphNode<T>* AddNode(void* data);
 
 	void AddConnectionByIndex(int nodeIndex1, int nodeIndex2);
 
@@ -28,7 +29,7 @@ public:
 
 	void RemoveNodeByKey(int key);
 
-	void AddConnection(GraphNode* a, GraphNode* b)
+	void AddConnection(GraphNode<T>* a, GraphNode<T>* b)
 	{
 		if(nodeList->contains(a) && nodeList->contains(b))
 		{
@@ -37,33 +38,37 @@ public:
 		}
 	}
 
-	void RemoveConnection(GraphNode *a, GraphNode* b)
+	void RemoveConnection(GraphNode<T> *a, GraphNode<T>* b)
 	{
 		a->RemoveConnection(b);
 		b->RemoveConnection(a);
 	}
 
-	GraphNode* at(int i);
+	GraphNode<T>* at(int i);
 
 	int length();
 
 	int GetNodeIndexByKey(int key);
 
-	GraphNode* GetNodeByKey(int key);
+	GraphNode<T>* GetNodeByKey(int key);
 
 	void Clear();
 
-	void SetStartNode(GraphNode* node);
-	void SetEndNode(GraphNode *node);
-	GraphNode* GetStartNode();
-	GraphNode* GetEndNode();
+	void SetStartNode(GraphNode<T>* node);
+	void SetEndNode(GraphNode<T> *node);
+
+	void SetStartNodeByIndex(int nodeIndex);
+	void SetEndNodeByIndex(int nodeIndex);
+
+	GraphNode<T>* GetStartNode();
+	GraphNode<T>* GetEndNode();
 
 private:
 	int keyCounter = 1;
-	QVector<GraphNode*> *nodeList = nullptr;
+	QVector<GraphNode<T>*> *nodeList = nullptr;
 
-	GraphNode* startNode;
-	GraphNode* endNode;
+	GraphNode<T>* startNode;
+	GraphNode<T>* endNode;
 };
 
 #endif // GRAPH_H

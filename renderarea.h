@@ -3,6 +3,8 @@
 
 #include "graph.h"
 #include "intpair.h"
+#include "netparams.h"
+#include "probabilityprovider.h"
 
 #include <QWidget>
 
@@ -13,16 +15,16 @@ class RenderArea : public QWidget
 {
 	Q_OBJECT
 public:
-	explicit RenderArea(QWidget *parent = nullptr);
+	explicit RenderArea(ProbabilityProvider *probabilityProvider, QWidget *parent = nullptr);
 
 	~RenderArea();
 
-	void DrawGraphNode(int x, int y);
+	void DrawGraphNode(int x, int y, double probability = 1);
 
 	void DrawGraphEdge(int nodeIndex1, int nodeIndex2);
 
 	// User must deallocate memory mannually for the returned object
-	Graph* GetGraph();
+	Graph<NetParams>* GetGraph();
 
 protected:
 	void paintEvent(QPaintEvent *event) override;
@@ -33,7 +35,10 @@ protected:
 
 private:
 	QVector<QPoint> *graphNodesList;
+	QVector<double> *probabilitiesList;
 	QVector<IntPair> *graphEdgesList;
+
+	ProbabilityProvider *probabilityProvider;
 
 	int prevSelectedNode = -1;
 

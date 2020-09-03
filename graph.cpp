@@ -157,6 +157,30 @@ void Graph::SetEndNode(GraphNode *node)
 	endNode = node;
 }
 
+void Graph::SetStartNodeByIndex(int nodeIndex)
+{
+	if(nodeIndex != -1)
+	{
+		startNode = nodeList->at(nodeIndex);
+	}
+	else
+	{
+		startNode = nullptr;
+	}
+}
+
+void Graph::SetEndNodeByIndex(int nodeIndex)
+{
+	if(nodeIndex != -1)
+	{
+		endNode = nodeList->at(nodeIndex);
+	}
+	else
+	{
+		endNode = nullptr;
+	}
+}
+
 GraphNode *Graph::GetStartNode()
 {
 	return startNode;

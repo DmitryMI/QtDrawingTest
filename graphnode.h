@@ -16,10 +16,11 @@
  * Memory management is delegated to Graph class
  * GraphNode::~GraphNode DOES NOT deallocate connected nodes
 */
+template <class T>
 class GraphNode
 {
 public:
-	GraphNode(int key, void* data )
+	GraphNode(int key, T *data )
 	{
 		this->key = key;
 		this->data = data;
@@ -28,6 +29,7 @@ public:
 
 	~GraphNode()
 	{
+		delete data;
 		delete connectionList;
 		connectionList = nullptr;
 	}
@@ -103,7 +105,7 @@ public:
 
 private:
 	int key;
-	void* data;
+	T data;
 	QVector<GraphNode*> *connectionList = nullptr;
 };
 

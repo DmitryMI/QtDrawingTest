@@ -1,3 +1,4 @@
+#include "probabilityprovider.h"
 #include "renderarea.h"
 
 #include <QMouseEvent>
@@ -13,23 +14,28 @@
 #define IS_POINT_INSIDE_NODE(center, point) (IS_POINT_INSIDE_NODE_INT(center.x(), center.y(), point.x(), point.y()))
 
 
-RenderArea::RenderArea(QWidget *parent) : QWidget(parent)
+RenderArea::RenderArea(ProbabilityProvider *probabilityProvider, QWidget *parent) : QWidget(parent)
 {
 	graphNodesList = new QVector<QPoint>();
 	graphEdgesList = new QVector<IntPair>();
+	probabilitiesList = new QVector<double>();
 	setMouseTracking(true);
+
+	this->probabilityProvider = probabilityProvider;
 }
 
 RenderArea::~RenderArea()
 {
 	delete graphNodesList;
 	delete graphEdgesList;
+	delete probabilitiesList;
 }
 
-void RenderArea::DrawGraphNode(int x, int y)
+void RenderArea::DrawGraphNode(int x, int y, double probability)
 {
 	QPoint nodeCenter = QPoint(x, y);
 	graphNodesList->push_back(nodeCenter);
+	probabilitiesList->push_back(probability);
 }
 
 void RenderArea::DrawGraphEdge(int nodeIndex1, int nodeIndex2)
@@ -57,7 +63,14 @@ void RenderArea::mouseReleaseEvent(QMouseEvent* event)
 	switch(button)
 	{
 	case Qt::MouseButton::LeftButton:
-		DrawGraphNode(x, y);
+		if(nodeOnPointIndex == -1)
+		{
+			double probability;
+			if(probabilityProvider->GetCurrentProbability(&probability))
+			{
+				DrawGraphNode(x, y, probability);
+			}
+		}
 		break;
 	case Qt::MouseButton::RightButton:
 		if(prevSelectedNode == -1)
@@ -105,6 +118,7 @@ void RenderArea::mouseReleaseEvent(QMouseEvent* event)
 				endNodeIndex = -1;
 			}
 		}
+		break;
 	default:
 		asm("nop");
 	}
@@ -184,12 +198,14 @@ void RenderArea::paintNodes()
 	nodesOutlinePen.setColor(QColor::fromRgb(0, 0, 0));
 	nodesOutlinePen.setWidth(2);
 
+	QPen nodesLabelPen = QPen();
+	nodesLabelPen.setColor(QColor::fromRgb(255, 255, 255));
+	nodesLabelPen.setWidth(2);
+
 	{ //*** Rendering saved graphical shapes ****
 
 		// Drawing ellipses
-		// Setting pen and brush. This will affect any shape that will be drawn next
-		//painter->setBrush(nodesFillingBrush);
-		painter->setPen(nodesOutlinePen);
+
 		for(int i = 0; i < graphNodesList->length(); i++)
 		{
 			QPoint center = graphNodesList->at(i);
@@ -215,7 +231,19 @@ void RenderArea::paintNodes()
 				painter->setBrush(nodesFillingBrush);
 			}
 
+			// Setting pen and brush. This will affect any shape that will be drawn next
+			//painter->setBrush(nodesFillingBrush);
+			painter->setPen(nodesOutlinePen);
+
 			painter->drawEllipse(shiftedX, shiftedY, RENDER_NODE_SIZE_PX, RENDER_NODE_SIZE_PX);
+
+			// Setting pen and brush. This will affect any shape that will be drawn next
+			//painter->setBrush(nodesFillingBrush);
+			painter->setPen(nodesLabelPen);
+			QString text = "%1";
+			double probability = probabilitiesList->at(i);
+			text = text.arg(probability);
+			painter->drawText(center.x(), center.y(), text);
 		}
 
 	} // *** Shapes rendering ends here ***
@@ -249,9 +277,9 @@ int RenderArea::getNodeOnPointIndex(int x, int y)
 	return -1;
 }
 
-Graph *RenderArea::GetGraph()
+Graph<NetParams> *RenderArea::GetGraph()
 {
-	Graph *graph = new Graph();
+	Graph<NetParams> *graph = new Graph<NetParams>();
 
 	for(int i = 0; i < graphNodesList->length(); i++)
 	{
@@ -263,6 +291,9 @@ Graph *RenderArea::GetGraph()
 		IntPair pair = graphEdgesList->at(i);
 		graph->AddConnectionByIndex(pair.getStart(), pair.getEnd());
 	}
+
+	graph->SetStartNodeByIndex(startNodeIndex);
+	graph->SetEndNodeByIndex(endNodeIndex);
 
 	return graph;
 }
