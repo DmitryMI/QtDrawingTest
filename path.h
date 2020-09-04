@@ -4,13 +4,13 @@
 #include "graphnode.h"
 
 
-
+template<class T>
 class Path
 {
 public:
 	Path()
 	{
-		path = new QVector<GraphNode*>();
+		path = new QVector<GraphNode<T>*>();
 	}
 
 	~Path()
@@ -23,17 +23,17 @@ public:
 		return path->length();
 	}
 
-	GraphNode* at(int i)
+	GraphNode<T>* at(int i)
 	{
 		return path->at(i);
 	}
 
-	void AddPathFragment(GraphNode* node)
+	void AddPathFragment(GraphNode<T>* node)
 	{
 		path->push_back(node);
 	}
 
-	void AddPathFragment(QVector<GraphNode*> *fragment)
+	void AddPathFragment(QVector<GraphNode<T>*> *fragment)
 	{
 		if(fragment == nullptr)
 		{
@@ -57,13 +57,13 @@ public:
 		}
 	}
 
-	bool Contains(GraphNode *node)
+	bool Contains(GraphNode<T> *node)
 	{
 		return path->contains(node);
 	}
 
 private:
-	QVector<GraphNode*> *path = nullptr;
+	QVector<GraphNode<T>*> *path = nullptr;
 };
 
 #endif // PATH_H

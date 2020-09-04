@@ -10,6 +10,11 @@ public:
 		this->probability = probability;
 	}
 
+	NetParams()
+	{
+		this->probability = 1;
+	}
+
 	double GetProbability()
 	{
 		return probability;

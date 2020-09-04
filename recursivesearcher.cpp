@@ -1,10 +1,11 @@
 #include "recursivesearcher.h"
+#include "netparams.h"
 
 
-void RecursiveSearcher::FindAllPaths(Graph *graph, QVector<Path*> *pathsList)
+void RecursiveSearcher::FindAllPaths(Graph<NetParams> *graph, QVector<Path<NetParams>*> *pathsList)
 {
-	Path *initialPath = new Path();
-	GraphNode* startNode = graph->GetStartNode();
+	Path<NetParams> *initialPath = new Path<NetParams>();
+	GraphNode<NetParams>* startNode = graph->GetStartNode();
 
 	RecursiveSearch(graph, startNode, initialPath, pathsList);
 }
@@ -14,7 +15,7 @@ RecursiveSearcher::~RecursiveSearcher()
 
 }
 
-void RecursiveSearcher::RecursiveSearch(Graph *graph, GraphNode *currentNode, Path *currentPath, QVector<Path*> *pathsList)
+void RecursiveSearcher::RecursiveSearch(Graph<NetParams> *graph, GraphNode<NetParams> *currentNode, Path<NetParams> *currentPath, QVector<Path<NetParams>*> *pathsList)
 {
 	currentPath->AddPathFragment(currentNode);
 
@@ -31,12 +32,12 @@ void RecursiveSearcher::RecursiveSearch(Graph *graph, GraphNode *currentNode, Pa
 
 	for(int i = 0; i < currentNode->ConnetionsCount(); i++)
 	{
-		GraphNode* connection = currentNode->ConnectionAt(i);
+		GraphNode<NetParams>* connection = currentNode->ConnectionAt(i);
 		if(currentPath->Contains(connection))
 		{
 			continue;
 		}
-		Path* pathClone = new Path();
+		Path<NetParams>* pathClone = new Path<NetParams>();
 		pathClone->AddPathFragment(currentPath);
 		RecursiveSearch(graph, connection, pathClone, pathsList);
 	}

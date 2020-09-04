@@ -11,8 +11,8 @@ public:
 
 	explicit Calculator(SearcherBase *searcher);
 
-	double GetMathematicalProbability(Graph *graph);
-	double GetExperimentalProbability(Graph *graph, int experimentsCount);
+	double GetMathematicalProbability(Graph<NetParams> *graph);
+	double GetExperimentalProbability(Graph<NetParams> *graph, int experimentsCount);
 
 private:
 	SearcherBase* searcher;

@@ -20,7 +20,7 @@ template <class T>
 class GraphNode
 {
 public:
-	GraphNode(int key, T *data )
+	GraphNode(int key, T data )
 	{
 		this->key = key;
 		this->data = data;
@@ -29,7 +29,6 @@ public:
 
 	~GraphNode()
 	{
-		delete data;
 		delete connectionList;
 		connectionList = nullptr;
 	}

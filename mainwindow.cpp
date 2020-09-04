@@ -45,7 +45,7 @@ void MainWindow::on_startButton_clicked()
 {
 	RecursiveSearcher *searcher = new RecursiveSearcher();
 	Calculator *calculator = new Calculator(searcher);
-	Graph *graph = renderArea->GetGraph();
+	Graph<NetParams> *graph = renderArea->GetGraph();
 
 	double mathProbability = calculator->GetMathematicalProbability(graph);
 

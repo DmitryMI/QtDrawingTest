@@ -7,9 +7,9 @@
 	}										\
 	delete vec;
 
-double Calculator::GetMathematicalProbability(Graph *graph)
+double Calculator::GetMathematicalProbability(Graph<NetParams> *graph)
 {
-	QVector<Path*> *pathList = new QVector<Path*>();
+	QVector<Path<NetParams>*> *pathList = new QVector<Path<NetParams>*>();
 	searcher->FindAllPaths(graph, pathList);
 
 	int pathsCount = pathList->length();
@@ -19,7 +19,7 @@ double Calculator::GetMathematicalProbability(Graph *graph)
 	return pathsCount;
 }
 
-double Calculator::GetExperimentalProbability(Graph *graph, int experimentsCount)
+double Calculator::GetExperimentalProbability(Graph<NetParams> *graph, int experimentsCount)
 {
 	return 0;
 }

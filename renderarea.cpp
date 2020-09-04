@@ -283,7 +283,9 @@ Graph<NetParams> *RenderArea::GetGraph()
 
 	for(int i = 0; i < graphNodesList->length(); i++)
 	{
-		graph->AddNode(nullptr);
+		double probability = probabilitiesList->at(i);
+		NetParams netParams = NetParams(probability);
+		graph->AddNode(netParams);
 	}
 
 	for(int i = 0; i < graphEdgesList->length(); i++)

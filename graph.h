@@ -1,7 +1,7 @@
 #ifndef GRAPH_H
 #define GRAPH_H
 
-#include "GraphNode.h"
+#include "graphnode.h"
 
 #include <qvector.h>
 
@@ -15,7 +15,7 @@ public:
 
 	// Returns unique key of created GraphNode<T>
 	GraphNode<T>* AddNode();
-	GraphNode<T>* AddNode(void* data);
+	GraphNode<T>* AddNode(T data);
 
 	void AddConnectionByIndex(int nodeIndex1, int nodeIndex2);
 

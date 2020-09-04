@@ -1,63 +1,73 @@
 #include "graph.h"
+#include "netparams.h"
 
-Graph::Graph()
+template <class T>
+Graph<T>::Graph()
 {
-	nodeList = new QVector<GraphNode*>();
+	nodeList = new QVector<GraphNode<T>*>();
 }
 
-Graph::~Graph()
+template <class T>
+Graph<T>::~Graph()
 {
 	Clear();
 }
 
-GraphNode* Graph::AddNode()
+template <class T>
+GraphNode<T>* Graph<T>::AddNode()
 {
-	return AddNode(nullptr);
+	return AddNode(NetParams());
 }
 
-GraphNode* Graph::AddNode(void *data)
+template <class T>
+GraphNode<T>* Graph<T>::AddNode(T data)
 {
 	if(nodeList == nullptr)
 	{
 		return nullptr;
 	}
-	GraphNode *node = new GraphNode(keyCounter, data);
+	GraphNode<T> *node = new GraphNode<T>(keyCounter, data);
 	keyCounter++;
 	nodeList->push_back(node);
 	return node;
 }
 
-void Graph::AddConnectionByIndex(int nodeIndex1, int nodeIndex2)
+template <class T>
+void Graph<T>::AddConnectionByIndex(int nodeIndex1, int nodeIndex2)
 {
-	GraphNode *node1 = at(nodeIndex1);
-	GraphNode *node2 = at(nodeIndex2);
+	GraphNode<T> *node1 = at(nodeIndex1);
+	GraphNode<T> *node2 = at(nodeIndex2);
 	node1->AddConnection(node2);
 	node2->AddConnection(node1);
 }
 
-void Graph::RemoveConnectionByIndex(int nodeIndex1, int nodeIndex2)
+template <class T>
+void Graph<T>::RemoveConnectionByIndex(int nodeIndex1, int nodeIndex2)
 {
-	GraphNode *node1 = at(nodeIndex1);
-	GraphNode *node2 = at(nodeIndex2);
+	GraphNode<T> *node1 = at(nodeIndex1);
+	GraphNode<T> *node2 = at(nodeIndex2);
 	node1->RemoveConnection(node2);
 	node2->RemoveConnection(node1);
 }
 
-void Graph::AddConnectionByKey(int key1, int key2)
+template <class T>
+void Graph<T>::AddConnectionByKey(int key1, int key2)
 {
 	int index1 = GetNodeIndexByKey(key1);
 	int index2 = GetNodeIndexByKey(key2);
 	AddConnectionByIndex(index1, index2);
 }
 
-void Graph::RemoveConnectionByKey(int key1, int key2)
+template <class T>
+void Graph<T>::RemoveConnectionByKey(int key1, int key2)
 {
 	int index1 = GetNodeIndexByKey(key1);
 	int index2 = GetNodeIndexByKey(key2);
 	RemoveConnectionByIndex(index1, index2);
 }
 
-void Graph::RemoveNodeByIndex(int index)
+template <class T>
+void Graph<T>::RemoveNodeByIndex(int index)
 {
 	if(nodeList == nullptr)
 	{
@@ -69,11 +79,11 @@ void Graph::RemoveNodeByIndex(int index)
 		return;
 	}
 
-	GraphNode *node = at(index);
+	GraphNode<T> *node = at(index);
 
 	for(int i = 0; i < node->ConnetionsCount(); i++)
 	{
-		GraphNode *connection = node->ConnectionAt(i);
+		GraphNode<T> *connection = node->ConnectionAt(i);
 		connection->RemoveConnection(node);
 	}
 
@@ -82,13 +92,15 @@ void Graph::RemoveNodeByIndex(int index)
 	delete node;
 }
 
-void Graph::RemoveNodeByKey(int key)
+template <class T>
+void Graph<T>::RemoveNodeByKey(int key)
 {
 	int index = GetNodeIndexByKey(key);
 	RemoveNodeByIndex(index);
 }
 
-GraphNode *Graph::at(int i)
+template <class T>
+GraphNode<T> *Graph<T>::at(int i)
 {
 	if(nodeList == nullptr)
 	{
@@ -101,7 +113,8 @@ GraphNode *Graph::at(int i)
 	return nodeList->at(i);
 }
 
-int Graph::length()
+template <class T>
+int Graph<T>::length()
 {
 	if(nodeList == nullptr)
 	{
@@ -110,11 +123,12 @@ int Graph::length()
 	return nodeList->length();
 }
 
-int Graph::GetNodeIndexByKey(int key)
+template <class T>
+int Graph<T>::GetNodeIndexByKey(int key)
 {
 	for(int i = 0; i < length(); i++)
 	{
-		GraphNode *node = at(i);
+		GraphNode<T> *node = at(i);
 		if(node->GetKey() == key)
 		{
 			return i;
@@ -124,7 +138,8 @@ int Graph::GetNodeIndexByKey(int key)
 	return -1;
 }
 
-GraphNode *Graph::GetNodeByKey(int key)
+template <class T>
+GraphNode<T> *Graph<T>::GetNodeByKey(int key)
 {
 	int index = GetNodeIndexByKey(key);
 	if(index == -1)
@@ -134,7 +149,8 @@ GraphNode *Graph::GetNodeByKey(int key)
 	return at(index);
 }
 
-void Graph::Clear()
+template <class T>
+void Graph<T>::Clear()
 {
 	for(int i = 0; i < length(); i ++)
 	{
@@ -143,21 +159,24 @@ void Graph::Clear()
 
 	delete nodeList;
 
-	nodeList = new QVector<GraphNode*>;
+	nodeList = new QVector<GraphNode<T>*>;
 	keyCounter = 1;
 }
 
-void Graph::SetStartNode(GraphNode *node)
+template <class T>
+void Graph<T>::SetStartNode(GraphNode<T> *node)
 {
 	startNode = node;
 }
 
-void Graph::SetEndNode(GraphNode *node)
+template <class T>
+void Graph<T>::SetEndNode(GraphNode<T> *node)
 {
 	endNode = node;
 }
 
-void Graph::SetStartNodeByIndex(int nodeIndex)
+template <class T>
+void Graph<T>::SetStartNodeByIndex(int nodeIndex)
 {
 	if(nodeIndex != -1)
 	{
@@ -169,7 +188,8 @@ void Graph::SetStartNodeByIndex(int nodeIndex)
 	}
 }
 
-void Graph::SetEndNodeByIndex(int nodeIndex)
+template <class T>
+void Graph<T>::SetEndNodeByIndex(int nodeIndex)
 {
 	if(nodeIndex != -1)
 	{
@@ -181,12 +201,16 @@ void Graph::SetEndNodeByIndex(int nodeIndex)
 	}
 }
 
-GraphNode *Graph::GetStartNode()
+template <class T>
+GraphNode<T> *Graph<T>::GetStartNode()
 {
 	return startNode;
 }
 
-GraphNode *Graph::GetEndNode()
+template <class T>
+GraphNode<T> *Graph<T>::GetEndNode()
 {
 	return endNode;
 }
+
+template class Graph<NetParams>;
