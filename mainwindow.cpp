@@ -49,7 +49,7 @@ void MainWindow::on_startButton_clicked()
 
 	double mathProbability = calculator->GetMathematicalProbability(graph);
 
-	QString probString = QString("%1\n").arg(mathProbability);
+	QString probString = QString("Mathematical probability: %1\n").arg(mathProbability);
 
 	QMessageBox msgBox;
 	msgBox.setText(probString);
@@ -67,4 +67,23 @@ void MainWindow::setupCustomUi()
 	QLayout *windowLayout = layout();
 
 	windowLayout->addWidget(renderArea);
+}
+
+void MainWindow::on_experimentButton_clicked()
+{
+	RecursiveSearcher *searcher = new RecursiveSearcher();
+	Calculator *calculator = new Calculator(searcher);
+	Graph<NetParams> *graph = renderArea->GetGraph();
+
+	double experimentProbability = calculator->GetExperimentalProbability(graph, 10000);
+
+	QString probString = QString("Experimental probability: %1\n").arg(experimentProbability);
+
+	QMessageBox msgBox;
+	msgBox.setText(probString);
+	msgBox.exec();
+
+	delete calculator;
+	delete searcher;
+	delete graph;
 }

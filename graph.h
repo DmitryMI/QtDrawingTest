@@ -29,20 +29,11 @@ public:
 
 	void RemoveNodeByKey(int key);
 
-	void AddConnection(GraphNode<T>* a, GraphNode<T>* b)
-	{
-		if(nodeList->contains(a) && nodeList->contains(b))
-		{
-			a->AddConnection(b);
-			b->AddConnection(a);
-		}
-	}
+	void RemoveNode(GraphNode<T>* node);
 
-	void RemoveConnection(GraphNode<T> *a, GraphNode<T>* b)
-	{
-		a->RemoveConnection(b);
-		b->RemoveConnection(a);
-	}
+	void AddConnection(GraphNode<T>* a, GraphNode<T>* b);
+
+	void RemoveConnection(GraphNode<T> *a, GraphNode<T>* b);
 
 	GraphNode<T>* at(int i);
 
@@ -63,12 +54,14 @@ public:
 	GraphNode<T>* GetStartNode();
 	GraphNode<T>* GetEndNode();
 
+	int GetNodeIndex(GraphNode<T> *node);
+
 private:
 	int keyCounter = 1;
 	QVector<GraphNode<T>*> *nodeList = nullptr;
 
-	GraphNode<T>* startNode;
-	GraphNode<T>* endNode;
+	GraphNode<T>* startNode = nullptr;
+	GraphNode<T>* endNode = nullptr;
 };
 
 #endif // GRAPH_H

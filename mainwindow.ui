@@ -37,7 +37,20 @@
      </rect>
     </property>
     <property name="text">
-     <string>0.9</string>
+     <string>0.5</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="experimentButton">
+    <property name="geometry">
+     <rect>
+      <x>610</x>
+      <y>530</y>
+      <width>80</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Experiment</string>
     </property>
    </widget>
   </widget>

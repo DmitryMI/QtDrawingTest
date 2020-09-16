@@ -1,6 +1,8 @@
 #include "recursivesearcher.h"
 #include "netparams.h"
 
+#include <QQueue>
+
 
 void RecursiveSearcher::FindAllPaths(Graph<NetParams> *graph, QVector<Path<NetParams>*> *pathsList)
 {
@@ -45,4 +47,63 @@ void RecursiveSearcher::RecursiveSearch(Graph<NetParams> *graph, GraphNode<NetPa
 	delete currentPath;
 }
 
+bool RecursiveSearcher::PathExists(Graph<NetParams> *graph)
+{
+	return BreadthFirstSearch(graph);
+}
+
+bool RecursiveSearcher::BreadthFirstSearch(Graph<NetParams> *graph)
+{
+	bool *visited = new bool[graph->length()];
+
+	for(int i = 0; i < graph->length(); i++)
+	{
+		visited[i] = false;
+	}
+
+	QQueue<int> queue = QQueue<int>();
+
+	auto startNode = graph->GetStartNode();
+	auto endNode = graph->GetEndNode();
+
+	if(startNode == nullptr || endNode == nullptr)
+	{
+		return false;
+	}
+
+	int startNodeIndex = graph->GetNodeIndex(startNode);
+	int endNodeIndex = graph->GetNodeIndex(endNode);
+
+	if(startNodeIndex == -1 || endNodeIndex == -1)
+	{
+		 return false;
+	}
+
+	queue.enqueue(startNodeIndex);
+
+	while(!queue.isEmpty())
+	{
+		int nodeIndex = queue.dequeue();
+		if(nodeIndex == endNodeIndex)
+		{
+			return true;
+		}
+
+		auto node = graph->at(nodeIndex);
+		for(int i = 0; i < node->ConnetionsCount(); i++)
+		{
+			auto connectedNode = node->ConnectionAt(i);
+			int connectionIndex = graph->GetNodeIndex(connectedNode);
+			if(visited[connectionIndex])
+			{
+				continue;
+			}
+			visited[connectionIndex] = true;
+			queue.enqueue(connectionIndex);
+		}
+	}
+
+	delete[] visited;
+	return false;
+}
 

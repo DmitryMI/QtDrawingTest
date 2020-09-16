@@ -81,6 +81,15 @@ void Graph<T>::RemoveNodeByIndex(int index)
 
 	GraphNode<T> *node = at(index);
 
+	if(node == startNode)
+	{
+		startNode = nullptr;
+	}
+	if(node == endNode)
+	{
+		endNode = nullptr;
+	}
+
 	for(int i = 0; i < node->ConnetionsCount(); i++)
 	{
 		GraphNode<T> *connection = node->ConnectionAt(i);
@@ -97,6 +106,30 @@ void Graph<T>::RemoveNodeByKey(int key)
 {
 	int index = GetNodeIndexByKey(key);
 	RemoveNodeByIndex(index);
+}
+
+template<class T>
+void Graph<T>::RemoveNode(GraphNode<T> *node)
+{
+	int index = GetNodeIndex(node);
+	RemoveNodeByIndex(index);
+}
+
+template<class T>
+void Graph<T>::AddConnection(GraphNode<T> *a, GraphNode<T> *b)
+{
+	if(nodeList->contains(a) && nodeList->contains(b))
+	{
+		a->AddConnection(b);
+		b->AddConnection(a);
+	}
+}
+
+template<class T>
+void Graph<T>::RemoveConnection(GraphNode<T> *a, GraphNode<T> *b)
+{
+	a->RemoveConnection(b);
+	b->RemoveConnection(a);
 }
 
 template <class T>
@@ -211,6 +244,23 @@ template <class T>
 GraphNode<T> *Graph<T>::GetEndNode()
 {
 	return endNode;
+}
+
+template<class T>
+int Graph<T>::GetNodeIndex(GraphNode<T> *node)
+{
+	int key = node->GetKey();
+	for(int i = 0; i < nodeList->length(); i++)
+	{
+		auto nodeEnum = nodeList->at(i);
+		int keyEnum = nodeEnum->GetKey();
+		if(keyEnum == key)
+		{
+			return i;
+		}
+	}
+
+	return -1;
 }
 
 template class Graph<NetParams>;

@@ -38,12 +38,12 @@ public:
 		return key;
 	}
 
-	void* GetData()
+	T GetData()
 	{
 		return data;
 	}
 
-	void SetData(void* data)
+	void SetData(T data)
 	{
 		this->data = data;
 	}

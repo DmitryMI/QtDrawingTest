@@ -26,6 +26,8 @@ public:
 private slots:
 	void on_startButton_clicked();
 
+	void on_experimentButton_clicked();
+
 private:
 	Ui::MainWindow *ui;
 

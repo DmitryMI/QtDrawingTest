@@ -2,6 +2,8 @@
 #define CALCULATOR_H
 
 #include "searcherbase.h"
+#include <random>
+#include <chrono>
 
 
 
@@ -16,6 +18,12 @@ public:
 
 private:
 	SearcherBase* searcher;
+	std::uniform_real_distribution<double> unif;
+	std::mt19937_64 rng;
+
+	void CloneGraph(Graph<NetParams> *original, Graph<NetParams> *clone);
+
+	bool RollDice(double probability);
 };
 
 #endif // CALCULATOR_H

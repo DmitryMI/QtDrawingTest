@@ -13,6 +13,7 @@ class SearcherBase
 {
 public:
 	virtual void FindAllPaths(Graph<NetParams> *graph, QVector<Path<NetParams>*> *pathsList) = 0;
+	virtual bool PathExists(Graph<NetParams> *graph) = 0;
 	virtual ~SearcherBase(){}
 };
 
