@@ -70,6 +70,15 @@ public:
 		connectionList->removeOne(node);
 	}
 
+    void RemoveConnection(int index)
+    {
+        if(connectionList == nullptr)
+        {
+            return;
+        }
+        connectionList->removeAt(index);
+    }
+
 	bool IsConnected(GraphNode* node)
 	{
 		if(connectionList == nullptr)

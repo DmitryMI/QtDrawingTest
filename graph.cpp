@@ -92,9 +92,14 @@ void Graph<T>::RemoveNodeByIndex(int index)
 
 	for(int i = 0; i < node->ConnetionsCount(); i++)
 	{
-		GraphNode<T> *connection = node->ConnectionAt(i);
-		connection->RemoveConnection(node);
+        GraphNode<T> *connection = node->ConnectionAt(i);
+        connection->RemoveConnection(node);
 	}
+
+    for(int i = 0; i < node->ConnetionsCount(); i++)
+    {
+        node->RemoveConnection(i);
+    }
 
 	nodeList->removeAt(index);
 
@@ -249,6 +254,10 @@ GraphNode<T> *Graph<T>::GetEndNode()
 template<class T>
 int Graph<T>::GetNodeIndex(GraphNode<T> *node)
 {
+    if(node == nullptr)
+    {
+        return -1;
+    }
 	int key = node->GetKey();
 	for(int i = 0; i < nodeList->length(); i++)
 	{

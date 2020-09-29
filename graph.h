@@ -43,10 +43,7 @@ public:
 
 	GraphNode<T>* GetNodeByKey(int key);
 
-	void Clear();
-
-	void SetStartNode(GraphNode<T>* node);
-	void SetEndNode(GraphNode<T> *node);
+	void Clear();	
 
 	void SetStartNodeByIndex(int nodeIndex);
 	void SetEndNodeByIndex(int nodeIndex);
@@ -57,11 +54,14 @@ public:
 	int GetNodeIndex(GraphNode<T> *node);
 
 private:
-	int keyCounter = 1;
+    int keyCounter = 0;
 	QVector<GraphNode<T>*> *nodeList = nullptr;
 
 	GraphNode<T>* startNode = nullptr;
 	GraphNode<T>* endNode = nullptr;
+
+    void SetStartNode(GraphNode<T>* node);
+    void SetEndNode(GraphNode<T> *node);
 };
 
 #endif // GRAPH_H

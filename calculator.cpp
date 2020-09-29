@@ -1,4 +1,7 @@
 #include "calculator.h"
+#include<QDebug>
+
+
 
 #define DELETE_VECTOR(vec) \
 	for(int i = 0; i < vec->length(); i++)	\
@@ -50,14 +53,15 @@ double Calculator::GetExperimentalProbability(Graph<NetParams> *graph, int exper
 
 		for(int j = 0; j < graphClone.length(); j++)
 		{
-			auto node = graphClone.at(j);
+            GraphNode<NetParams>* node = graphClone.at(j);
 			double probability = node->GetData().GetProbability();
 			bool isBroken = RollDice(1 - probability);
 			if(isBroken)
 			{
-				graphClone.RemoveNode(node);
+                graphClone.RemoveNode(node);
+                j--;
 			}
-		}
+        }
 
 		bool pathExists = searcher->PathExists(&graphClone);
 		if(pathExists)
@@ -66,7 +70,7 @@ double Calculator::GetExperimentalProbability(Graph<NetParams> *graph, int exper
 		}
 	}
 
-	return (double)successedExperiments / experimentsCount;
+    return ((double)successedExperiments) / experimentsCount;
 }
 
 void Calculator::CloneGraph(Graph<NetParams> *original, Graph<NetParams> *clone)
@@ -79,18 +83,24 @@ void Calculator::CloneGraph(Graph<NetParams> *original, Graph<NetParams> *clone)
 
 	for(int i = 0; i < original->length(); i++)
 	{
-		auto node = original->at(i);
-		for(int j = 0; j < node->ConnetionsCount(); j++)
+        auto originalNode = original->at(i);
+
+        for(int j = 0; j < originalNode->ConnetionsCount(); j++)
 		{
-			auto connection = node->ConnectionAt(j);
+            auto connection = originalNode->ConnectionAt(j);
 			int connectionOriginalIndex = original->GetNodeIndex(connection);
 
 			clone->AddConnectionByIndex(i, connectionOriginalIndex);
 		}
 	}
 
-	clone->SetStartNode(original->GetStartNode());
-	clone->SetEndNode(original->GetEndNode());
+    auto startNode = original->GetStartNode();
+    auto endNode = original->GetEndNode();
+    int startNodeIndex = original->GetNodeIndex(startNode);
+    int endNodeIndex = original->GetNodeIndex(endNode);
+
+    clone->SetStartNodeByIndex(startNodeIndex);
+    clone->SetEndNodeByIndex(endNodeIndex);
 }
 
 bool Calculator::RollDice(double probability)
