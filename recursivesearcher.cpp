@@ -9,6 +9,11 @@ void RecursiveSearcher::FindAllPaths(Graph<NetParams> *graph, QVector<Path<NetPa
 	Path<NetParams> *initialPath = new Path<NetParams>();
 	GraphNode<NetParams>* startNode = graph->GetStartNode();
 
+    if(startNode == nullptr || graph->GetEndNode() == nullptr)
+    {
+        return;
+    }
+
 	RecursiveSearch(graph, startNode, initialPath, pathsList);
 }
 

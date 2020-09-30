@@ -10,37 +10,94 @@
 	}										\
 	delete vec;
 
+double Calculator::Method1(Graph<NetParams> *graph)
+{
+    QVector<Path<NetParams>*> *pathList = new QVector<Path<NetParams>*>();
+    searcher->FindAllPaths(graph, pathList);
+
+    int pathsCount = pathList->length();
+
+    if(pathsCount == 0)
+    {
+        return 0;
+    }
+
+    double allPathsFaultProbability = 1;
+
+    for(int i = 0; i < pathsCount; i++)
+    {
+        Path<NetParams> *path = pathList->at(i);
+
+        // Get working probability of each path
+        double workingProbability = 1;
+        for(int j = 0; j < path->length(); j++)
+        {
+            auto node = path->at(j);
+            double probability = node->GetData().GetProbability();
+            workingProbability *= probability;
+        }
+
+        double faultProbability = 1 - workingProbability;
+        allPathsFaultProbability *= faultProbability;
+    }
+
+    double result = 1 - allPathsFaultProbability;
+
+    DELETE_VECTOR(pathList);
+
+    return result;
+}
+
+double Calculator::Method2(Graph<NetParams> *graph)
+{
+    QVector<Path<NetParams>*> *pathList = new QVector<Path<NetParams>*>();
+    searcher->FindAllPaths(graph, pathList);
+
+    int pathsCount = pathList->length();
+
+    if(pathsCount == 0)
+    {
+        return 0;
+    }
+
+    int totalCounter = 0;
+
+    QList<int> nodeFrequency = QList<int>();
+    for(int i = 0; i < graph->length(); i++)
+    {
+        nodeFrequency.push_back(0);
+    }
+
+    for(int i = 0; i < pathsCount; i++)
+    {
+        Path<NetParams> *path = pathList->at(i);
+        for(int j = 0; j < path->length(); j++)
+        {
+            auto node = path->at(j);
+            int nodeIndex = graph->GetNodeIndex(node);
+            int frequency = nodeFrequency.at(nodeIndex) + 1;
+            nodeFrequency[nodeIndex] = frequency;
+        }
+        totalCounter += path->length();
+    }
+
+    double result = 1;
+
+    for(int i = 0; i < graph->length(); i++)
+    {
+        auto node = graph->at(i);
+        double probability = node->GetData().GetProbability();
+        double powered = pow(probability, ((double)nodeFrequency[i]));
+        result *= powered;
+    }
+
+    DELETE_VECTOR(pathList);
+    return result;
+}
+
 double Calculator::GetMathematicalProbability(Graph<NetParams> *graph)
 {
-	QVector<Path<NetParams>*> *pathList = new QVector<Path<NetParams>*>();
-	searcher->FindAllPaths(graph, pathList);
-
-	int pathsCount = pathList->length();
-
-	double allPathsFaultProbability = 1;
-
-	for(int i = 0; i < pathsCount; i++)
-	{
-		Path<NetParams> *path = pathList->at(i);
-
-		// Get working probability of each path
-		double workingProbability = 1;
-		for(int j = 0; j < path->length(); j++)
-		{
-			auto node = path->at(j);
-			double probability = node->GetData().GetProbability();
-			workingProbability *= probability;
-		}
-
-		double faultProbability = 1 - workingProbability;
-		allPathsFaultProbability *= faultProbability;
-	}
-
-	double result = 1 - allPathsFaultProbability;
-
-	DELETE_VECTOR(pathList);
-
-	return result;
+    return Method2(graph);
 }
 
 double Calculator::GetExperimentalProbability(Graph<NetParams> *graph, int experimentsCount)
