@@ -31,55 +31,38 @@ GraphNode<T>* Graph<T>::AddNode(T data)
 	nodeList->push_back(node);
 	return node;
 }
-
-template <class T>
-void Graph<T>::AddConnectionByIndex(int nodeIndex1, int nodeIndex2)
-{
-	GraphNode<T> *node1 = at(nodeIndex1);
-	GraphNode<T> *node2 = at(nodeIndex2);
-	node1->AddConnection(node2);
-	node2->AddConnection(node1);
-}
-
-template <class T>
-void Graph<T>::RemoveConnectionByIndex(int nodeIndex1, int nodeIndex2)
-{
-	GraphNode<T> *node1 = at(nodeIndex1);
-	GraphNode<T> *node2 = at(nodeIndex2);
-	node1->RemoveConnection(node2);
-	node2->RemoveConnection(node1);
-}
-
 template <class T>
 void Graph<T>::AddConnectionByKey(int key1, int key2)
 {
-	int index1 = GetNodeIndexByKey(key1);
-	int index2 = GetNodeIndexByKey(key2);
-	AddConnectionByIndex(index1, index2);
+    GraphNode<T> *node1 = at(key1);
+    GraphNode<T> *node2 = at(key2);
+    node1->AddConnection(node2);
+    node2->AddConnection(node1);
 }
 
 template <class T>
 void Graph<T>::RemoveConnectionByKey(int key1, int key2)
 {
-	int index1 = GetNodeIndexByKey(key1);
-	int index2 = GetNodeIndexByKey(key2);
-	RemoveConnectionByIndex(index1, index2);
+    GraphNode<T> *node1 = at(key1);
+    GraphNode<T> *node2 = at(key2);
+    node1->RemoveConnection(node2);
+    node2->RemoveConnection(node1);
 }
 
 template <class T>
-void Graph<T>::RemoveNodeByIndex(int index)
+void Graph<T>::RemoveNodeByKey(int key)
 {
 	if(nodeList == nullptr)
 	{
 		return;
 	}
 
-	if(index < 0 || index >= nodeList->length())
+    if(key < 0 || key >= nodeList->length())
 	{
 		return;
 	}
 
-	GraphNode<T> *node = at(index);
+    GraphNode<T> *node = at(key);
 
 	if(node == startNode)
 	{
@@ -101,23 +84,22 @@ void Graph<T>::RemoveNodeByIndex(int index)
         node->RemoveConnection(i);
     }
 
-	nodeList->removeAt(index);
+    nodeList->removeAt(key);
+
+    for(int i = key; i < nodeList->length(); i++)
+    {
+        GraphNode<T> *node = nodeList->at(i);
+        node->SetKey(i);
+    }
 
 	delete node;
-}
-
-template <class T>
-void Graph<T>::RemoveNodeByKey(int key)
-{
-	int index = GetNodeIndexByKey(key);
-	RemoveNodeByIndex(index);
 }
 
 template<class T>
 void Graph<T>::RemoveNode(GraphNode<T> *node)
 {
-	int index = GetNodeIndex(node);
-	RemoveNodeByIndex(index);
+    int key = node->GetKey();
+    RemoveNodeByKey(key);
 }
 
 template<class T>
@@ -162,29 +144,9 @@ int Graph<T>::length()
 }
 
 template <class T>
-int Graph<T>::GetNodeIndexByKey(int key)
-{
-	for(int i = 0; i < length(); i++)
-	{
-		GraphNode<T> *node = at(i);
-		if(node->GetKey() == key)
-		{
-			return i;
-		}
-	}
-
-	return -1;
-}
-
-template <class T>
 GraphNode<T> *Graph<T>::GetNodeByKey(int key)
-{
-	int index = GetNodeIndexByKey(key);
-	if(index == -1)
-	{
-		return nullptr;
-	}
-	return at(index);
+{	
+    return at(key);
 }
 
 template <class T>
@@ -214,11 +176,11 @@ void Graph<T>::SetEndNode(GraphNode<T> *node)
 }
 
 template <class T>
-void Graph<T>::SetStartNodeByIndex(int nodeIndex)
+void Graph<T>::SetStartNodeByKey(int nodeKey)
 {
-	if(nodeIndex != -1)
+    if(nodeKey != -1)
 	{
-		startNode = nodeList->at(nodeIndex);
+        startNode = nodeList->at(nodeKey);
 	}
 	else
 	{
@@ -227,11 +189,11 @@ void Graph<T>::SetStartNodeByIndex(int nodeIndex)
 }
 
 template <class T>
-void Graph<T>::SetEndNodeByIndex(int nodeIndex)
+void Graph<T>::SetEndNodeByKey(int nodeKey)
 {
-	if(nodeIndex != -1)
+    if(nodeKey != -1)
 	{
-		endNode = nodeList->at(nodeIndex);
+        endNode = nodeList->at(nodeKey);
 	}
 	else
 	{
@@ -252,24 +214,9 @@ GraphNode<T> *Graph<T>::GetEndNode()
 }
 
 template<class T>
-int Graph<T>::GetNodeIndex(GraphNode<T> *node)
+int Graph<T>::GetNodeKey(GraphNode<T> *node)
 {
-    if(node == nullptr)
-    {
-        return -1;
-    }
-	int key = node->GetKey();
-	for(int i = 0; i < nodeList->length(); i++)
-	{
-		auto nodeEnum = nodeList->at(i);
-		int keyEnum = nodeEnum->GetKey();
-		if(keyEnum == key)
-		{
-			return i;
-		}
-	}
-
-	return -1;
+    return node->GetKey();
 }
 
 template class Graph<NetParams>;

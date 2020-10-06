@@ -76,8 +76,8 @@ bool RecursiveSearcher::BreadthFirstSearch(Graph<NetParams> *graph)
 		return false;
 	}
 
-	int startNodeIndex = graph->GetNodeIndex(startNode);
-	int endNodeIndex = graph->GetNodeIndex(endNode);
+    int startNodeIndex = graph->GetNodeKey(startNode);
+    int endNodeIndex = graph->GetNodeKey(endNode);
 
 	if(startNodeIndex == -1 || endNodeIndex == -1)
 	{
@@ -98,7 +98,7 @@ bool RecursiveSearcher::BreadthFirstSearch(Graph<NetParams> *graph)
 		for(int i = 0; i < node->ConnetionsCount(); i++)
 		{
 			auto connectedNode = node->ConnectionAt(i);
-			int connectionIndex = graph->GetNodeIndex(connectedNode);
+            int connectionIndex = graph->GetNodeKey(connectedNode);
 			if(visited[connectionIndex])
 			{
 				continue;

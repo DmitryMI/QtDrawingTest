@@ -291,11 +291,11 @@ Graph<NetParams> *RenderArea::GetGraph()
 	for(int i = 0; i < graphEdgesList->length(); i++)
 	{
 		IntPair pair = graphEdgesList->at(i);
-		graph->AddConnectionByIndex(pair.getStart(), pair.getEnd());
+        graph->AddConnectionByKey(pair.getStart(), pair.getEnd());
 	}
 
-	graph->SetStartNodeByIndex(startNodeIndex);
-	graph->SetEndNodeByIndex(endNodeIndex);
+    graph->SetStartNodeByKey(startNodeIndex);
+    graph->SetEndNodeByKey(endNodeIndex);
 
 	return graph;
 }

@@ -10,19 +10,35 @@
 class LogicEquation
 {
     QVector<LogicEquationNode*> *equationNodes;
+    QVector<LogicEquationNode*> *primitivesList;
     LogicEquationNode *coreNode;
 
-    void Construct(EventProbabilityProvider *provider, QVector<Path<NetParams> *> *pathList);
-    LogicEquationNode* ConstructMultiplicative(EventProbabilityProvider *provider, Path<NetParams> *path);
+    void Construct(QVector<Path<NetParams> *> *pathList);
+    LogicEquationNode* ConstructMultiplicative(Path<NetParams> *path);
 
     bool ResolveRecursively(LogicEquationNode* node, bool *input, int length);
 
+    LogicEquationNode* AddUniquePrimitive(int eventIndex);
+
+    LogicEquation();
+
+    double ResolveProbabilityRecursively(EventProbabilityProvider *provider, LogicEquationNode *node);
+    double ResolveProbability(EventProbabilityProvider *provider);
+
 public:
-    LogicEquation(EventProbabilityProvider *provider, QVector<Path<NetParams>*> *pathList);
+    LogicEquation(QVector<Path<NetParams>*> *pathList);
 
     bool Resolve(bool *input, int length);
 
     ~LogicEquation();
+
+    int getEventsCount();
+
+    static LogicEquation *GetPerfectDisjunctiveNormalForm(LogicEquation* sourceEquation);
+
+    LogicEquationNode* FindPrimitive(int eventIndex);
+
+    double GetProbability(EventProbabilityProvider *provider);
 };
 
 #endif // LOGICEQUATION_H

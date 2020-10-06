@@ -14,13 +14,17 @@ LogicEquationNode::LogicEquationNode(LogicOperation op, LogicEquationNode *a)
     secondOperand = nullptr;
 }
 
-LogicEquationNode::LogicEquationNode(EventProbabilityProvider *provider, int eventIndex)
+LogicEquationNode::LogicEquationNode(int eventIndex)
 {
-    this->eventProbabilityProvider = provider;
     this->eventIndex = eventIndex;
 }
 
 int LogicEquationNode::getEventIndex()
 {
     return eventIndex;
+}
+
+LogicOperation LogicEquationNode::getLogicOperation()
+{
+    return operation;
 }

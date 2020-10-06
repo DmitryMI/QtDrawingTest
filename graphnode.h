@@ -38,6 +38,11 @@ public:
 		return key;
 	}
 
+    void SetKey(int key)
+    {
+        this->key = key;
+    }
+
 	T GetData()
 	{
 		return data;

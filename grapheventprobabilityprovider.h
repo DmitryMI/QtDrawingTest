@@ -11,16 +11,9 @@ class GraphEventProbabilityProvider : public EventProbabilityProvider
 {
     Graph<NetParams> *graph;
 public:
-    GraphEventProbabilityProvider(Graph<NetParams> *graph)
-    {
-        this->graph = graph;
-    }
+    GraphEventProbabilityProvider(Graph<NetParams> *graph);
 
-    virtual double  GetEventProbability(int index)
-    {
-       GraphNode<NetParams> *node = graph->GetNodeByKey(index);
-       return node->GetData().GetProbability();
-    }
+    virtual double  GetEventProbability(int index);
 };
 
 #endif // GRAPHEVENTPROBABILITYPROVIDER_H

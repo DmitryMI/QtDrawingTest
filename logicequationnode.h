@@ -11,17 +11,27 @@ class LogicEquationNode
     int eventIndex = 0;
     LogicEquationNode *firstOperand = nullptr;
     LogicEquationNode *secondOperand = nullptr;
-    EventProbabilityProvider *eventProbabilityProvider = nullptr;
-
 public:
 
     LogicEquationNode(LogicOperation op, LogicEquationNode *a, LogicEquationNode *b);
 
     LogicEquationNode(LogicOperation op, LogicEquationNode *a);
 
-    LogicEquationNode(EventProbabilityProvider *provider, int eventIndex);
+    LogicEquationNode(int eventIndex);
 
     int getEventIndex();
+
+    LogicOperation getLogicOperation();
+
+    LogicEquationNode *getFirstOperand()
+    {
+        return firstOperand;
+    }
+
+    LogicEquationNode *getSecondOperand()
+    {
+        return secondOperand;
+    }
 };
 
 #endif // LOGICEQUATIONNODE_H

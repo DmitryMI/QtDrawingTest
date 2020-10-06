@@ -14,19 +14,12 @@ public:
 
 	~Graph();
 
-	// Returns unique key of created GraphNode<T>
 	GraphNode<T>* AddNode();
-	GraphNode<T>* AddNode(T data);
-
-	void AddConnectionByIndex(int nodeIndex1, int nodeIndex2);
-
-	void RemoveConnectionByIndex(int nodeIndex1, int nodeIndex2);
+	GraphNode<T>* AddNode(T data);	
 
 	void AddConnectionByKey(int key1, int key2);
 
-	void RemoveConnectionByKey(int key1, int key2);
-
-	void RemoveNodeByIndex(int index);
+	void RemoveConnectionByKey(int key1, int key2);	
 
 	void RemoveNodeByKey(int key);
 
@@ -38,21 +31,19 @@ public:
 
 	GraphNode<T>* at(int i);
 
-	int length();
-
-	int GetNodeIndexByKey(int key);
+	int length();	
 
 	GraphNode<T>* GetNodeByKey(int key);
 
-	void Clear();	
-
-	void SetStartNodeByIndex(int nodeIndex);
-	void SetEndNodeByIndex(int nodeIndex);
+	void Clear();		
 
 	GraphNode<T>* GetStartNode();
 	GraphNode<T>* GetEndNode();
 
-	int GetNodeIndex(GraphNode<T> *node);
+    void SetStartNodeByKey(int nodeKey);
+    void SetEndNodeByKey(int nodeKey);
+
+    int GetNodeKey(GraphNode<T> *node);
 
 private:
     int keyCounter = 0;
