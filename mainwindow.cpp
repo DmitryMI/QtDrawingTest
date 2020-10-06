@@ -75,7 +75,7 @@ void MainWindow::on_experimentButton_clicked()
 	Calculator *calculator = new Calculator(searcher);
 	Graph<NetParams> *graph = renderArea->GetGraph();
 
-	double experimentProbability = calculator->GetExperimentalProbability(graph, 10000);
+    double experimentProbability = calculator->GetExperimentalProbability(graph, 100000);
 
 	QString probString = QString("Experimental probability: %1\n").arg(experimentProbability);
 
