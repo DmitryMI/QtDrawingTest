@@ -23,10 +23,8 @@ private:
 
 	void CloneGraph(Graph<NetParams> *original, Graph<NetParams> *clone);
 
-	bool RollDice(double probability);
+    bool RollDice(double probability);
 
-    double Method1(Graph<NetParams> *graph);
-    double Method2(Graph<NetParams> *graph);
 };
 
 #endif // CALCULATOR_H

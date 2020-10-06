@@ -18,7 +18,10 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
     calculator.cpp \
     graph.cpp \
+    grapheventprobabilityprovider.cpp \
     intpair.cpp \
+    logicequation.cpp \
+    logicequationnode.cpp \
     main.cpp \
     mainwindow.cpp \
     recursivesearcher.cpp \
@@ -26,9 +29,14 @@ SOURCES += \
 
 HEADERS += \
     calculator.h \
+    eventprobabilityprovider.h \
     graph.h \
+    grapheventprobabilityprovider.h \
     graphnode.h \
     intpair.h \
+    logicequation.h \
+    logicequationnode.h \
+    logicoperation.h \
     mainwindow.h \
     netparams.h \
     path.h \

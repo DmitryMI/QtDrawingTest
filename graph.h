@@ -1,6 +1,7 @@
 #ifndef GRAPH_H
 #define GRAPH_H
 
+#include "eventprobabilityprovider.h"
 #include "graphnode.h"
 
 #include <qvector.h>
