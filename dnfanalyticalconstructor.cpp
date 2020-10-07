@@ -416,10 +416,12 @@ LogicEquation *DnfAnalyticalConstructor::GetPdnf(QVector<Path<NetParams> *> *pat
         conjunctionList->append(conjunctionOperand);
     }
 
+    int lastOperandIndex = 0;
+
     while(true)
     {
         bool operandsAppended = false;
-        for(int i = 0; i < conjunctionList->length(); i++)
+        for(int i = lastOperandIndex; i < conjunctionList->length(); i++)
         {
             QVector<int> *operand = conjunctionList->at(i);
             QVector<int> presentNodes = QVector<int>();
@@ -438,6 +440,8 @@ LogicEquation *DnfAnalyticalConstructor::GetPdnf(QVector<Path<NetParams> *> *pat
                 appendixOperand->append(missingNodes[j]);
                 conjunctionList->append(appendixOperand);
             }
+
+            lastOperandIndex = i;
         }
 
         if(!operandsAppended)
