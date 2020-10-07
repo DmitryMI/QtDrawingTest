@@ -297,5 +297,47 @@ Graph<NetParams> *RenderArea::GetGraph()
     graph->SetStartNodeByKey(startNodeIndex);
     graph->SetEndNodeByKey(endNodeIndex);
 
-	return graph;
+    return graph;
+}
+
+void RenderArea::BuildSquareGraph(int size)
+{
+    graphNodesList->clear();
+    graphEdgesList->clear();
+
+    int fieldWidth = width();
+    int fieldHeigh = height();
+    int pixelStepX = fieldWidth / size;
+    int pixelStepY = fieldHeigh / size;
+
+    int topOffset = RENDER_NODE_SIZE_PX;
+    int leftOffset = RENDER_NODE_SIZE_PX;
+
+    for(int i = 0; i < size; i++)
+    {
+        for(int k = 0; k < size; k++)
+        {
+            int x = leftOffset + k * pixelStepX;
+            int y = topOffset + i * pixelStepY;
+            DrawGraphNode(x, y, 0.5);
+            int currentIndex = i * size + k;
+            int rightNodeI = i;
+            int rightNodeK = k - 1;
+            if(rightNodeK >= 0)
+            {
+                int index = rightNodeI * size + rightNodeK;
+                DrawGraphEdge(currentIndex, index);
+            }
+            int topNodeI = i - 1;
+            int topNodeK = k;
+            if(topNodeI >= 0)
+            {
+                int index = topNodeI * size + topNodeK;
+                DrawGraphEdge(currentIndex, index);
+            }
+        }
+    }
+
+    startNodeIndex = 0;
+    endNodeIndex = size * size - 1;
 }

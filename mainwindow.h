@@ -28,6 +28,8 @@ private slots:
 
 	void on_experimentButton_clicked();
 
+    void on_buildSquareGraph_clicked();
+
 private:
 	Ui::MainWindow *ui;
 

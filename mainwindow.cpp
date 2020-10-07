@@ -87,3 +87,11 @@ void MainWindow::on_experimentButton_clicked()
 	delete searcher;
 	delete graph;
 }
+
+void MainWindow::on_buildSquareGraph_clicked()
+{
+    QString sizeText = ui->squareGraphSizeBox->text();
+    int size = sizeText.toInt();
+
+    renderArea->BuildSquareGraph(size);
+}

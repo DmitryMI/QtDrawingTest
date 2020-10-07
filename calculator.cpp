@@ -2,7 +2,10 @@
 #include "grapheventprobabilityprovider.h"
 #include "logicequation.h"
 #include "dnfanalyticalconstructor.h"
+#include "dnfbruteforceconstructor.h"
 #include<QDebug>
+
+#define USE_ANALYTICAL 1
 
 
 
@@ -28,16 +31,15 @@ double Calculator::GetMathematicalProbability(Graph<NetParams> *graph)
 
     GraphEventProbabilityProvider *provider = new GraphEventProbabilityProvider(graph);
 
-    /*
-    LogicEquation *tableDerivedEquation = new LogicEquation(pathList);
-    double tableDerivedResult = tableDerivedEquation->GetProbability(provider);
-    */
-
+#if USE_ANALYTICAL == 1
     LogicEquation *analitycallyDerivedEquation = DnfAnalyticalConstructor::GetPdnf(pathList);
     double analitycallyDerivedResult = analitycallyDerivedEquation->GetProbability(provider);
-
-
     return analitycallyDerivedResult;
+#else
+    LogicEquation *tableDerivedEquation = DnfBruteforceConstructor::GetPdnf(pathList);
+    double tableDerivedResult = tableDerivedEquation->GetProbability(provider);
+    return tableDerivedResult;
+#endif
 }
 
 double Calculator::GetExperimentalProbability(Graph<NetParams> *graph, int experimentsCount)

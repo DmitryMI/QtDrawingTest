@@ -2,15 +2,6 @@
 #include "logicequation.h"
 #include <cmath>
 
-LogicEquation::LogicEquation(QVector<Path<NetParams>*> *pathList)
-{
-    coreNode = nullptr;
-    equationNodes = new QVector<LogicEquationNode*>();
-    primitivesList = new QVector<LogicEquationNode*>();
-
-    Construct(pathList);
-}
-
 LogicEquation::~LogicEquation()
 {
     for(int i = 0; i < equationNodes->length(); i++)
@@ -26,53 +17,9 @@ int LogicEquation::getEventsCount()
     return primitivesList->length();
 }
 
-void LogicEquation::Construct(QVector<Path<NetParams> *> *pathList)
+int LogicEquation::getEquationNodesCount()
 {
-    LogicEquationNode *prev = nullptr;
-
-    for(int i = 0; i < pathList->length(); i++)
-    {
-        Path<NetParams> *path = pathList->at(i);
-
-        LogicEquationNode* disjunction = ConstructMultiplicative(path);
-        equationNodes->append(disjunction);
-
-        if(prev == nullptr)
-        {
-            prev = disjunction;
-        }
-        else
-        {
-            LogicEquationNode *conjunction = new LogicEquationNode(Conjunction, prev, disjunction);
-            equationNodes->append(conjunction);
-            prev = conjunction;
-        }
-    }
-
-    coreNode = prev;
-}
-
-LogicEquationNode*  LogicEquation::ConstructMultiplicative(Path<NetParams> *path)
-{
-    LogicEquationNode *prev = nullptr;
-    for(int j = 0; j < path->length(); j++)
-    {
-        GraphNode<NetParams> *node = path->at(j);
-        int nodeKey = node->GetKey();
-        LogicEquationNode *multiplier = AddUniquePrimitive(nodeKey);
-        if(prev == nullptr)
-        {
-            prev = multiplier;
-        }
-        else
-        {
-            LogicEquationNode *multiplication = new LogicEquationNode(Disjunction, prev, multiplier);
-            equationNodes->append(multiplier);
-            prev = multiplication;
-        }
-    }
-
-    return prev;
+    return equationNodes->length();
 }
 
 bool LogicEquation::ResolveRecursively(LogicEquationNode *node, bool *input, int length)
@@ -183,70 +130,6 @@ bool LogicEquation::Resolve(bool *input, int length)
     return ResolveRecursively(coreNode, input, length);
 }
 
-LogicEquation *LogicEquation::GetPerfectDisjunctiveNormalForm(LogicEquation* sourceEquation)
-{
-    LogicEquation *result = new LogicEquation();
-
-    int eventsCount = sourceEquation->getEventsCount();
-    bool *input = new bool[eventsCount];
-
-    int variationsCount = 1 << eventsCount; // 2 ^ eventsCount;
-
-    LogicEquationNode *prevConjunction = nullptr;
-
-    for(int mask = 0; mask < variationsCount; mask++)
-    {
-        for(int i = 0; i < eventsCount; i++)
-        {
-            input[i] = mask & (1 << i);
-        }
-
-        bool combinationResult = sourceEquation->Resolve(input, eventsCount);
-        if(combinationResult == true)
-        {
-            LogicEquationNode *prevDisjunction = nullptr;
-            for(int i = 0; i < eventsCount; i++)
-            {
-                LogicEquationNode *disjunction;
-                if(input[i])
-                {
-                    disjunction = result->AddUniquePrimitive(i);
-                }
-                else
-                {
-                    LogicEquationNode *negatedEvent = result->AddUniquePrimitive(i);
-                    disjunction = new LogicEquationNode(LogicOperation::Negation, negatedEvent, nullptr);
-                    result->equationNodes->append(disjunction);
-                }
-
-                if(prevDisjunction == nullptr)
-                {
-                    prevDisjunction = disjunction;
-                }
-                else
-                {
-                    prevDisjunction = new LogicEquationNode(LogicOperation::Disjunction, prevDisjunction, disjunction);
-                    result->equationNodes->append(prevDisjunction);
-                }
-            }
-
-            if(prevConjunction == nullptr)
-            {
-                prevConjunction = prevDisjunction;
-            }
-            else
-            {
-                prevConjunction = new LogicEquationNode(LogicOperation::Conjunction, prevConjunction, prevDisjunction);
-                result->equationNodes->append(prevConjunction);
-            }
-        }
-    }
-
-    delete[] input;
-
-    result->coreNode = prevConjunction;
-    return result;
-}
 
 double LogicEquation::GetProbability(EventProbabilityProvider *provider)
 {

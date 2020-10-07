@@ -26,6 +26,8 @@ public:
 	// User must deallocate memory mannually for the returned object
 	Graph<NetParams>* GetGraph();
 
+    void BuildSquareGraph(int size);
+
 protected:
 	void paintEvent(QPaintEvent *event) override;
 

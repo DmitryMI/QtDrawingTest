@@ -1,4 +1,3 @@
-#include "combinator.h"
 #include "dnfanalyticalconstructor.h"
 
 #include <QMessageBox>
