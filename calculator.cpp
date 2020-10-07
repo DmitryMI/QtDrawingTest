@@ -1,6 +1,7 @@
 #include "calculator.h"
 #include "grapheventprobabilityprovider.h"
 #include "logicequation.h"
+#include "dnfanalyticalconstructor.h"
 #include<QDebug>
 
 
@@ -25,13 +26,18 @@ double Calculator::GetMathematicalProbability(Graph<NetParams> *graph)
         return 0;
     }
 
-    LogicEquation *equation = new LogicEquation(pathList);
-
     GraphEventProbabilityProvider *provider = new GraphEventProbabilityProvider(graph);
 
-    double result = equation->GetProbability(provider);
+    /*
+    LogicEquation *tableDerivedEquation = new LogicEquation(pathList);
+    double tableDerivedResult = tableDerivedEquation->GetProbability(provider);
+    */
 
-    return result;
+    LogicEquation *analitycallyDerivedEquation = DnfAnalyticalConstructor::GetPdnf(pathList);
+    double analitycallyDerivedResult = analitycallyDerivedEquation->GetProbability(provider);
+
+
+    return analitycallyDerivedResult;
 }
 
 double Calculator::GetExperimentalProbability(Graph<NetParams> *graph, int experimentsCount)
@@ -86,12 +92,25 @@ void Calculator::CloneGraph(Graph<NetParams> *original, Graph<NetParams> *clone)
 	}
 
     auto startNode = original->GetStartNode();
+    if(startNode == nullptr)
+    {
+        clone->SetStartNodeByKey(-1);
+    }
+    else
+    {
+        int startNodeIndex = original->GetNodeKey(startNode);
+        clone->SetStartNodeByKey(startNodeIndex);
+    }
     auto endNode = original->GetEndNode();
-    int startNodeIndex = original->GetNodeKey(startNode);
-    int endNodeIndex = original->GetNodeKey(endNode);
-
-    clone->SetStartNodeByKey(startNodeIndex);
-    clone->SetEndNodeByKey(endNodeIndex);
+    if(endNode == nullptr)
+    {
+        clone->SetEndNodeByKey(-1);
+    }
+    else
+    {
+        int endNodeIndex = original->GetNodeKey(endNode);
+        clone->SetEndNodeByKey(endNodeIndex);
+    }
 }
 
 bool Calculator::RollDice(double probability)

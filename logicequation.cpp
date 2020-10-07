@@ -116,6 +116,16 @@ LogicEquationNode* LogicEquation::AddUniquePrimitive(int eventIndex)
     return node;
 }
 
+void LogicEquation::AddEquationNode(LogicEquationNode *node)
+{
+    equationNodes->append(node);
+}
+
+void LogicEquation::SetRootNode(LogicEquationNode *node)
+{
+    coreNode = node;
+}
+
 LogicEquation::LogicEquation()
 {
     coreNode = nullptr;
@@ -240,10 +250,10 @@ LogicEquation *LogicEquation::GetPerfectDisjunctiveNormalForm(LogicEquation* sou
 
 double LogicEquation::GetProbability(EventProbabilityProvider *provider)
 {
-    LogicEquation *dnf = LogicEquation::GetPerfectDisjunctiveNormalForm(this);
-
+    //LogicEquation *dnf = LogicEquation::GetPerfectDisjunctiveNormalForm(this);
+    LogicEquation *dnf = this;
     double result = dnf->ResolveProbability(provider);
 
-    delete dnf;
+    //delete dnf;
     return result;
 }

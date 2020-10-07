@@ -18,15 +18,12 @@ class LogicEquation
 
     bool ResolveRecursively(LogicEquationNode* node, bool *input, int length);
 
-    LogicEquationNode* AddUniquePrimitive(int eventIndex);
-
-    LogicEquation();
-
     double ResolveProbabilityRecursively(EventProbabilityProvider *provider, LogicEquationNode *node);
     double ResolveProbability(EventProbabilityProvider *provider);
 
 public:
     LogicEquation(QVector<Path<NetParams>*> *pathList);
+    LogicEquation();
 
     bool Resolve(bool *input, int length);
 
@@ -39,6 +36,13 @@ public:
     LogicEquationNode* FindPrimitive(int eventIndex);
 
     double GetProbability(EventProbabilityProvider *provider);
+
+    LogicEquationNode* AddUniquePrimitive(int eventIndex);
+
+    void AddEquationNode(LogicEquationNode *node);
+
+    void SetRootNode(LogicEquationNode *node);
+
 };
 
 #endif // LOGICEQUATION_H

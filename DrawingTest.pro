@@ -17,6 +17,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
     calculator.cpp \
+    dnfanalyticalconstructor.cpp \
     graph.cpp \
     grapheventprobabilityprovider.cpp \
     intpair.cpp \
@@ -29,6 +30,7 @@ SOURCES += \
 
 HEADERS += \
     calculator.h \
+    dnfanalyticalconstructor.h \
     eventprobabilityprovider.h \
     graph.h \
     grapheventprobabilityprovider.h \
