@@ -1,6 +1,8 @@
 #include <QPainter>
 #include <QLayout>
 #include <QMessageBox>
+#include <QTime>
+#include <QElapsedTimer>
 #include "calculator.h"
 #include "mainwindow.h"
 #include "recursivesearcher.h"
@@ -43,13 +45,18 @@ bool MainWindow::GetCurrentProbability(double* probability)
 
 void MainWindow::on_startButton_clicked()
 {
+    QElapsedTimer timer;
+    timer.start();
+
 	RecursiveSearcher *searcher = new RecursiveSearcher();
 	Calculator *calculator = new Calculator(searcher);
 	Graph<NetParams> *graph = renderArea->GetGraph();
 
 	double mathProbability = calculator->GetMathematicalProbability(graph);
+    int milliseconds = timer.elapsed();
+    QTime timespan = QTime::fromMSecsSinceStartOfDay(milliseconds);
 
-	QString probString = QString("Mathematical probability: %1\n").arg(mathProbability);
+    QString probString = QString("Time: %0\nMathematical probability: %1\n").arg(timespan.toString()).arg(mathProbability);
 
 	QMessageBox msgBox;
 	msgBox.setText(probString);
@@ -58,6 +65,8 @@ void MainWindow::on_startButton_clicked()
 	delete calculator;
 	delete searcher;
 	delete graph;
+
+
 }
 
 void MainWindow::setupCustomUi()

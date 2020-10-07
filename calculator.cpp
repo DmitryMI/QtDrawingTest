@@ -19,6 +19,7 @@
 
 double Calculator::GetMathematicalProbability(Graph<NetParams> *graph)
 {
+
     QVector<Path<NetParams>*> *pathList = new QVector<Path<NetParams>*>();
     searcher->FindAllPaths(graph, pathList);
 
@@ -31,15 +32,17 @@ double Calculator::GetMathematicalProbability(Graph<NetParams> *graph)
 
     GraphEventProbabilityProvider *provider = new GraphEventProbabilityProvider(graph);
 
+    double result;
 #if USE_ANALYTICAL == 1
     LogicEquation *analitycallyDerivedEquation = DnfAnalyticalConstructor::GetPdnf(pathList);
     double analitycallyDerivedResult = analitycallyDerivedEquation->GetProbability(provider);
-    return analitycallyDerivedResult;
+    result = analitycallyDerivedResult;
 #else
     LogicEquation *tableDerivedEquation = DnfBruteforceConstructor::GetPdnf(pathList);
     double tableDerivedResult = tableDerivedEquation->GetProbability(provider);
-    return tableDerivedResult;
+    result = tableDerivedResult;
 #endif
+    return result;
 }
 
 double Calculator::GetExperimentalProbability(Graph<NetParams> *graph, int experimentsCount)

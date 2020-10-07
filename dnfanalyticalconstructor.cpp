@@ -33,6 +33,21 @@ bool IsSubset(QSet<int> *set1, QSet<int> *set2)
     return true;
 }
 
+bool IsSubset(QVector<int> *set1, QVector<int> *set2)
+{
+    for(int i = 0; i < set1->count(); i++)
+    {
+        int value = set1->at(i);
+        if(!set2->contains(value))
+        {
+            return false;
+            break;
+        }
+    }
+
+    return true;
+}
+
 SetComparisonResult CompareSets(QSet<int> *set1, QSet<int> *set2)
 {
     bool isSubset12 = IsSubset(set1, set2);
@@ -398,6 +413,44 @@ void RemoveSupersets( QVector<QVector<int>*> *conjunctionList)
     }
 }
 
+bool ContainsSet(QVector<QVector<int>*> *setList, QVector<int>* set)
+{
+    for(int i = 0; i < setList->length(); i++)
+    {
+        QVector<int>* listAt = setList->at(i);
+        int areEqual = true;
+        for(int j = 0; j < listAt->length(); j++)
+        {
+            if(listAt->at(j) != set->at(j))
+            {
+                areEqual = false;
+                break;
+            }
+        }
+
+        if(areEqual)
+        {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+bool ContainsSuperset(QVector<QVector<int>> *setList, QVector<int>* set)
+{
+    for(int i = 0; i < setList->length(); i++)
+    {
+        QVector<int> listAt = setList->at(i);
+        if(IsSubset(set, &listAt))
+        {
+            return true;
+        }
+    }
+
+    return false;
+}
+
 LogicEquation *DnfAnalyticalConstructor::GetPdnf(QVector<Path<NetParams> *> *pathList)
 {
     QVector<Path<NetParams>*> listClone = QVector<Path<NetParams>*>();
@@ -419,6 +472,8 @@ LogicEquation *DnfAnalyticalConstructor::GetPdnf(QVector<Path<NetParams> *> *pat
 
     int operandsCount = conjunctionList->length();
 
+    QVector<QVector<int>> appendixCombinationList = QVector<QVector<int>>();
+
     for(int i = 0; i < operandsCount; i++)
     {
         QVector<int> *operand = conjunctionList->at(i);
@@ -432,9 +487,10 @@ LogicEquation *DnfAnalyticalConstructor::GetPdnf(QVector<Path<NetParams> *> *pat
         AppendInvertedNodes(operand, &missingNodes);
 
         int combinations = (1 << missingNodes.length()) - 1;
-        for(int combination = 0; combination < combinations; combination++)
+        for(int combination = 1; combination < combinations; combination++)
         {
             QVector<int> *appendixOperand = new QVector<int>();
+            QVector<int> combinationVector = QVector<int>();
             CopyListContents(&presentNodes, appendixOperand);
             for(int k = 0; k < missingNodes.length(); k++)
             {
@@ -446,11 +502,22 @@ LogicEquation *DnfAnalyticalConstructor::GetPdnf(QVector<Path<NetParams> *> *pat
                 else
                 {
                     nodeIndex = -missingNodes[k];
+                    combinationVector.append(missingNodes[k]);
                 }
                 appendixOperand->append(nodeIndex);
             }
-            conjunctionList->append(appendixOperand);
+            //conjunctionList->append(appendixOperand);
+            if(ContainsSuperset(&appendixCombinationList, &combinationVector))
+            {
+                delete appendixOperand;
+            }
+            else
+            {
+                conjunctionList->append(appendixOperand);
+            }
         }
+
+        appendixCombinationList.append(missingNodes);
     }
 
 
@@ -458,11 +525,11 @@ LogicEquation *DnfAnalyticalConstructor::GetPdnf(QVector<Path<NetParams> *> *pat
 
     //QString beforeReductionStr = PrintPdnf(conjunctionList);
 
-    RemoveSupersets(conjunctionList);
+    //RemoveSupersets(conjunctionList);
 
-    QString afterReduction = PrintPdnf(conjunctionList);
+    //QString afterReduction = PrintPdnf(conjunctionList);
 
-    QMessageBox::information(nullptr, "LogicEquation", afterReduction);
+    //QMessageBox::information(nullptr, "LogicEquation", afterReduction);
 
     LogicEquation *equation = BuildEquation(conjunctionList);
 
