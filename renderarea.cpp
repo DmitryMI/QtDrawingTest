@@ -304,6 +304,7 @@ void RenderArea::BuildSquareGraph(int size)
 {
     graphNodesList->clear();
     graphEdgesList->clear();
+    probabilitiesList->clear();
 
     int fieldWidth = width();
     int fieldHeigh = height();
@@ -313,13 +314,22 @@ void RenderArea::BuildSquareGraph(int size)
     int topOffset = RENDER_NODE_SIZE_PX;
     int leftOffset = RENDER_NODE_SIZE_PX;
 
+    double probability;
+
     for(int i = 0; i < size; i++)
     {
         for(int k = 0; k < size; k++)
         {
             int x = leftOffset + k * pixelStepX;
             int y = topOffset + i * pixelStepY;
-            DrawGraphNode(x, y, 0.5);
+            if(probabilityProvider->GetCurrentProbability(&probability))
+            {
+                DrawGraphNode(x, y, probability);
+            }
+            else
+            {
+                DrawGraphNode(x, y, 1);
+            }
             int currentIndex = i * size + k;
             int rightNodeI = i;
             int rightNodeK = k - 1;

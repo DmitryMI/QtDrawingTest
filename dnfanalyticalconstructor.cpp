@@ -488,12 +488,11 @@ void DnfAnalyticalConstructor::GetPdnfConjunction(QVector<Path<NetParams> *> *pa
         }
         AppendInvertedNodes(operand, &missingNodes);
 
-        int combinations = (1 << missingNodes.length()) - 1;
-        for(int combination = 1; combination < combinations; combination++)
+        uint64_t combinations = (1 << missingNodes.length()) - 1;
+        for(uint64_t combination = 1; combination < combinations; combination++)
         {
             QVector<int> *appendixOperand = new QVector<int>();
-            QVector<int> combinationVector = QVector<int>();
-            CopyListContents(&presentNodes, appendixOperand);
+            QVector<int> combinationVector = QVector<int>();            
             for(int k = 0; k < missingNodes.length(); k++)
             {
                 int nodeIndex;
@@ -515,6 +514,7 @@ void DnfAnalyticalConstructor::GetPdnfConjunction(QVector<Path<NetParams> *> *pa
             }
             else
             {
+                CopyListContents(&presentNodes, appendixOperand);
                 conjunctionList->append(appendixOperand);
             }
         }
