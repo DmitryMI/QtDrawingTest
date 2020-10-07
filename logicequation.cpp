@@ -1,6 +1,8 @@
 #include "graph.h"
 #include "logicequation.h"
+#include <QQueue>
 #include <cmath>
+#include <qstack.h>
 
 LogicEquation::~LogicEquation()
 {
@@ -128,6 +130,11 @@ LogicEquationNode *LogicEquation::FindPrimitive(int eventIndex)
 bool LogicEquation::Resolve(bool *input, int length)
 {
     return ResolveRecursively(coreNode, input, length);
+}
+
+double LogicEquation::ResolveProbabilityIteratively(EventProbabilityProvider *provider)
+{
+    return 0;
 }
 
 

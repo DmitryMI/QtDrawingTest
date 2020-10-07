@@ -34,7 +34,8 @@ double Calculator::GetMathematicalProbability(Graph<NetParams> *graph)
 
     double result;
 #if USE_ANALYTICAL == 1
-    LogicEquation *analitycallyDerivedEquation = DnfAnalyticalConstructor::GetPdnf(pathList);
+    //LogicEquation *analitycallyDerivedEquation = DnfAnalyticalConstructor::GetPdnf(pathList);
+    LinearLogicEquation *analitycallyDerivedEquation = DnfAnalyticalConstructor::GetPdnfLinear(pathList);
     double analitycallyDerivedResult = analitycallyDerivedEquation->GetProbability(provider);
     result = analitycallyDerivedResult;
 #else

@@ -22,6 +22,7 @@ SOURCES += \
     graph.cpp \
     grapheventprobabilityprovider.cpp \
     intpair.cpp \
+    linearlogicequation.cpp \
     logicequation.cpp \
     logicequationnode.cpp \
     main.cpp \
@@ -38,6 +39,7 @@ HEADERS += \
     grapheventprobabilityprovider.h \
     graphnode.h \
     intpair.h \
+    linearlogicequation.h \
     logicequation.h \
     logicequationnode.h \
     logicoperation.h \

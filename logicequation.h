@@ -16,6 +16,8 @@ class LogicEquation
     double ResolveProbabilityRecursively(EventProbabilityProvider *provider, LogicEquationNode *node);
     double ResolveProbability(EventProbabilityProvider *provider);
 
+    double ResolveProbabilityIteratively(EventProbabilityProvider *provider);
+
 public:
     LogicEquation();
 

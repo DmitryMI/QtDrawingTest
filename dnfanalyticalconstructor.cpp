@@ -17,6 +17,8 @@ DnfAnalyticalConstructor::DnfAnalyticalConstructor()
 
 }
 
+
+
 bool IsSubset(QSet<int> *set1, QSet<int> *set2)
 {
     QList<int> values1 = set1->values();
@@ -451,7 +453,7 @@ bool ContainsSuperset(QVector<QVector<int>> *setList, QVector<int>* set)
     return false;
 }
 
-LogicEquation *DnfAnalyticalConstructor::GetPdnf(QVector<Path<NetParams> *> *pathList)
+void DnfAnalyticalConstructor::GetPdnfConjunction(QVector<Path<NetParams> *> *pathList, QVector<QVector<int> *> *conjunctionList)
 {
     QVector<Path<NetParams>*> listClone = QVector<Path<NetParams>*>();
     CopyListContents(pathList, &listClone);
@@ -461,7 +463,7 @@ LogicEquation *DnfAnalyticalConstructor::GetPdnf(QVector<Path<NetParams> *> *pat
     QVector<int> *nodeIndexSet = new QVector<int>();
     GetNodeSet(listClone, nodeIndexSet);
 
-    QVector<QVector<int>*> *conjunctionList = new QVector<QVector<int>*>();
+    //QVector<QVector<int>*> *conjunctionList = new QVector<QVector<int>*>();
     for(int i = 0; i < listClone.length(); i++)
     {
         Path<NetParams> *path = listClone.at(i);
@@ -519,8 +521,6 @@ LogicEquation *DnfAnalyticalConstructor::GetPdnf(QVector<Path<NetParams> *> *pat
 
         appendixCombinationList.append(missingNodes);
     }
-
-
     conjunctionList->append(nodeIndexSet);
 
     //QString beforeReductionStr = PrintPdnf(conjunctionList);
@@ -530,6 +530,12 @@ LogicEquation *DnfAnalyticalConstructor::GetPdnf(QVector<Path<NetParams> *> *pat
     //QString afterReduction = PrintPdnf(conjunctionList);
 
     //QMessageBox::information(nullptr, "LogicEquation", afterReduction);
+}
+
+LogicEquation *DnfAnalyticalConstructor::GetPdnfTree(QVector<Path<NetParams> *> *pathList)
+{
+    QVector<QVector<int> *> *conjunctionList = new QVector<QVector<int>*>();
+    GetPdnfConjunction(pathList, conjunctionList);
 
     LogicEquation *equation = BuildEquation(conjunctionList);
 
@@ -537,3 +543,17 @@ LogicEquation *DnfAnalyticalConstructor::GetPdnf(QVector<Path<NetParams> *> *pat
 
     return equation;
 }
+
+LinearLogicEquation *DnfAnalyticalConstructor::GetPdnfLinear(QVector<Path<NetParams> *> *pathList)
+{
+    QVector<QVector<int> *> *conjunctionList = new QVector<QVector<int>*>();
+    GetPdnfConjunction(pathList, conjunctionList);
+
+    LinearLogicEquation *equation = new LinearLogicEquation(conjunctionList);
+
+    FreeVectorMatrix(conjunctionList);
+
+    return equation;
+}
+
+
