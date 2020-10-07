@@ -1,7 +1,9 @@
+#include "combinator.h"
 #include "dnfanalyticalconstructor.h"
 
 #include <QMessageBox>
 #include <QSet>
+#include <QStack>
 
 typedef enum SetComparisonResult
 {
@@ -416,39 +418,42 @@ LogicEquation *DnfAnalyticalConstructor::GetPdnf(QVector<Path<NetParams> *> *pat
         conjunctionList->append(conjunctionOperand);
     }
 
-    int lastOperandIndex = 0;
+    int operandsCount = conjunctionList->length();
 
-    while(true)
+    for(int i = 0; i < operandsCount; i++)
     {
-        bool operandsAppended = false;
-        for(int i = lastOperandIndex; i < conjunctionList->length(); i++)
+        QVector<int> *operand = conjunctionList->at(i);
+        QVector<int> presentNodes = QVector<int>();
+        QVector<int> missingNodes = QVector<int>();
+        GetSetPresentMissing(operand, &presentNodes, &missingNodes, nodeIndexSet);
+        if(missingNodes.length() == 0)
         {
-            QVector<int> *operand = conjunctionList->at(i);
-            QVector<int> presentNodes = QVector<int>();
-            QVector<int> missingNodes = QVector<int>();
-            GetSetPresentMissing(operand, &presentNodes, &missingNodes, nodeIndexSet);
-            if(missingNodes.length() == 0)
-            {
-                continue;
-            }
-            operandsAppended = true;
-            AppendInvertedNodes(operand, &missingNodes);
-            for(int j = 0; j < missingNodes.length(); j++)
-            {
-                QVector<int> *appendixOperand = new QVector<int>();
-                CopyListContents(&presentNodes, appendixOperand);
-                appendixOperand->append(missingNodes[j]);
-                conjunctionList->append(appendixOperand);
-            }
-
-            lastOperandIndex = i;
+            continue;
         }
+        AppendInvertedNodes(operand, &missingNodes);
 
-        if(!operandsAppended)
+        int combinations = (1 << missingNodes.length()) - 1;
+        for(int combination = 0; combination < combinations; combination++)
         {
-            break;
+            QVector<int> *appendixOperand = new QVector<int>();
+            CopyListContents(&presentNodes, appendixOperand);
+            for(int k = 0; k < missingNodes.length(); k++)
+            {
+                int nodeIndex;
+                if(combination & (1 << k))
+                {
+                    nodeIndex =  missingNodes[k];
+                }
+                else
+                {
+                    nodeIndex = -missingNodes[k];
+                }
+                appendixOperand->append(nodeIndex);
+            }
+            conjunctionList->append(appendixOperand);
         }
     }
+
 
     conjunctionList->append(nodeIndexSet);
 
