@@ -380,6 +380,27 @@ int GetNcRAll(int n)
     return summ;
 }
 
+int GetUnitPosition(uint64_t combination)
+{
+    int pos = 0;
+    while(!(combination & 1))
+    {
+        combination >>= 1;
+        pos++;
+    }
+    return pos;
+}
+
+int SkipCombinations(uint64_t combination)
+{
+    int mask = 1;
+    while(!(combination & mask))
+    {
+        mask <<= 1;
+    }
+    return combination + mask;
+}
+
 void ProcessOperand(QVector<QVector<int> *> *conjunctionList, int nodeIndex, QVector<int> *nodeIndexSet, QVector<QVector<int>*> *appendixCombinationList)
 {
     QVector<int> *operand = conjunctionList->at(nodeIndex);
@@ -388,11 +409,11 @@ void ProcessOperand(QVector<QVector<int> *> *conjunctionList, int nodeIndex, QVe
     GetSetPresentMissing(operand, &presentNodes, missingNodes, nodeIndexSet);
     if(missingNodes->length() == 0)
     {
+        delete operand;
+        delete missingNodes;
         return;
     }
     AppendInvertedNodes(operand, missingNodes);
-
-    QVector<int> *prevCombinationVector = nullptr;;
 
     uint64_t combinations = (1 << missingNodes->length()) - 1;
     for(uint64_t combination = 1; combination < combinations; combination++)
@@ -414,22 +435,17 @@ void ProcessOperand(QVector<QVector<int> *> *conjunctionList, int nodeIndex, QVe
             appendixOperand->append(nodeIndex);
         }
 
-        if(prevCombinationVector != nullptr)
-        {
-            if(SetUtils::IsSubset(combinationVector, prevCombinationVector))
-            {
-                continue;
-            }
-        }
-
         QVector<int> *superset = FindSuperset(appendixCombinationList, combinationVector);
 
         if(superset != nullptr)
         {
-            prevCombinationVector = superset;
             /*
-            int combinationsToSkip = GetNcRAll(combinationVector->length()) - 1;
-            //combination += combinationsToSkip - 1;
+            int unitPos = GetUnitPosition(combination);
+            int positionsToSkip = (1 << unitPos) - 1;
+            combination += positionsToSkip;
+            */
+            combination = SkipCombinations(combination) - 1;
+/*
             char subsetBuffer[256];
             char supersetBuffer[256];
             PrintSet(superset, supersetBuffer, 256);
@@ -438,22 +454,22 @@ void ProcessOperand(QVector<QVector<int> *> *conjunctionList, int nodeIndex, QVe
                   .arg(supersetBuffer)
                   .arg(subsetBuffer)
                   .arg(combination, 0, 2)
-                  .arg(combinationsToSkip)
+                  .arg(positionsToSkip)
                   .toStdString().c_str());
-            */
+*/
             delete appendixOperand;
             delete combinationVector;
         }
         else
         {
-            /*
+/*
             char subsetBuffer[256];
             PrintSet(combinationVector, subsetBuffer, 256);
             qInfo(QString("END on %0. Superset for %1 was not found")
-                  .arg(combination, 0, 2)
+                  .arg(combination, missingNodes->length(), 2)
                   .arg(subsetBuffer)
                   .toStdString().c_str());
-            */
+*/
             SetUtils::CopyListContents(&presentNodes, appendixOperand);
             conjunctionList->append(appendixOperand);
 
