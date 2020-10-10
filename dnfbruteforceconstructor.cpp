@@ -142,72 +142,6 @@ LogicEquation *DnfBruteforceConstructor::GetPerfectDisjunctiveNormalForm(LogicEq
     return result;
 }
 
-LogicEquation *DnfBruteforceConstructor::GetPerfectDisjunctiveNormalForm(LogicEquation* sourceEquation)
-{
-    LogicEquation *result = new LogicEquation();
-
-    int eventsCount = sourceEquation->getEventsCount();
-    bool *input = new bool[eventsCount];
-
-    int variationsCount = 1 << eventsCount; // 2 ^ eventsCount;
-
-    LogicEquationNode *prevConjunction = nullptr;
-
-    for(int mask = 0; mask < variationsCount; mask++)
-    {
-        for(int i = 0; i < eventsCount; i++)
-        {
-            input[i] = mask & (1 << i);
-        }
-
-        bool combinationResult = sourceEquation->Resolve(input, eventsCount);
-        if(combinationResult == true)
-        {
-            LogicEquationNode *prevDisjunction = nullptr;
-            for(int i = 0; i < eventsCount; i++)
-            {
-                LogicEquationNode *disjunction;
-                if(input[i])
-                {
-                    disjunction = result->AddUniquePrimitive(i);
-                }
-                else
-                {
-                    LogicEquationNode *negatedEvent = result->AddUniquePrimitive(i);
-                    disjunction = new LogicEquationNode(LogicOperation::Negation, negatedEvent, nullptr);
-                    result->AddEquationNode(disjunction);
-                }
-
-                if(prevDisjunction == nullptr)
-                {
-                    prevDisjunction = disjunction;
-                }
-                else
-                {
-                    prevDisjunction = new LogicEquationNode(LogicOperation::Disjunction, prevDisjunction, disjunction);
-                   result->AddEquationNode(prevDisjunction);
-                }
-            }
-
-            if(prevConjunction == nullptr)
-            {
-                prevConjunction = prevDisjunction;
-            }
-            else
-            {
-                prevConjunction = new LogicEquationNode(LogicOperation::Conjunction, prevConjunction, prevDisjunction);
-                result->AddEquationNode(prevConjunction);
-            }
-        }
-    }
-
-    delete[] input;
-
-    result->SetRootNode(prevConjunction);
-    return result;
-}
-
-
 LogicEquationNode*  DnfBruteforceConstructor::ConstructMultiplicative(LogicEquation* equation, Path<NetParams> *path)
 {
     LogicEquationNode *prev = nullptr;
@@ -267,11 +201,8 @@ LogicEquation* DnfBruteforceConstructor::GetPdnf(QVector<Path<NetParams>*> *path
     LogicEquation *dnf = new LogicEquation();
     Construct(dnf, &listClone);
 
-#if USE_PARALLEL == 0
-    LogicEquation *pdnf = GetPerfectDisjunctiveNormalForm(dnf);
-#else
     LogicEquation *pdnf = GetPerfectDisjunctiveNormalForm(dnf, USE_THREADS);
-#endif
+
     delete dnf;
 
     return pdnf;
