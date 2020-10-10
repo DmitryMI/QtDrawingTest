@@ -5,8 +5,6 @@
 #include <random>
 #include <chrono>
 
-
-
 class Calculator
 {
 public:

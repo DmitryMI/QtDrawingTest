@@ -6,14 +6,12 @@
 #include "path.h"
 #include <mutex>
 
-#define USE_THREADS     32
-
 class DnfBruteforceConstructor
 {
     DnfBruteforceConstructor();
 public:
 
-    static LogicEquation *GetPdnf(QVector<Path<NetParams>*> *pathList);
+    static LogicEquation *GetPdnf(QVector<Path<NetParams>*> *pathList, int thread_count = 1);
 
 private:
     static LogicEquation *GetPerfectDisjunctiveNormalForm(LogicEquation *sourceEquation);

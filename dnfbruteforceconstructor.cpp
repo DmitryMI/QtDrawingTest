@@ -191,7 +191,7 @@ void DnfBruteforceConstructor::Construct(LogicEquation* equation, QVector<Path<N
     equation->SetRootNode(prev);
 }
 
-LogicEquation* DnfBruteforceConstructor::GetPdnf(QVector<Path<NetParams>*> *pathList)
+LogicEquation* DnfBruteforceConstructor::GetPdnf(QVector<Path<NetParams>*> *pathList, int thread_count)
 {    
     QVector<Path<NetParams>*> listClone = QVector<Path<NetParams>*>();
     SetUtils::CopyListContents(pathList, &listClone);
@@ -201,7 +201,7 @@ LogicEquation* DnfBruteforceConstructor::GetPdnf(QVector<Path<NetParams>*> *path
     LogicEquation *dnf = new LogicEquation();
     Construct(dnf, &listClone);
 
-    LogicEquation *pdnf = GetPerfectDisjunctiveNormalForm(dnf, USE_THREADS);
+    LogicEquation *pdnf = GetPerfectDisjunctiveNormalForm(dnf, thread_count);
 
     delete dnf;
 
