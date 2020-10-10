@@ -2,8 +2,17 @@
 #include "setutils.h"
 
 #include <QMessageBox>
+#include <QQueue>
 #include <QSet>
 #include <QStack>
+#include <mutex>
+#include <shared_mutex>
+#include <thread>
+
+std::mutex operandsQueueMutex;
+std::shared_timed_mutex appendixCombinationListMutex;
+std::shared_timed_mutex conjunctionListMutex;
+
 
 
 DnfAnalyticalConstructor::DnfAnalyticalConstructor()
@@ -298,6 +307,53 @@ bool ContainsSuperset(QVector<QVector<int>> *setList, QVector<int>* set)
     return false;
 }
 
+void ProcessOperand(QVector<QVector<int> *> *conjunctionList, int nodeIndex, QVector<int> *nodeIndexSet, QVector<QVector<int>> *appendixCombinationList)
+{
+    QVector<int> *operand = conjunctionList->at(nodeIndex);
+    QVector<int> presentNodes = QVector<int>();
+    QVector<int> missingNodes = QVector<int>();
+    GetSetPresentMissing(operand, &presentNodes, &missingNodes, nodeIndexSet);
+    if(missingNodes.length() == 0)
+    {
+        return;
+    }
+    AppendInvertedNodes(operand, &missingNodes);
+
+    uint64_t combinations = (1 << missingNodes.length()) - 1;
+    for(uint64_t combination = 1; combination < combinations; combination++)
+    {
+        QVector<int> *appendixOperand = new QVector<int>();
+        QVector<int> combinationVector = QVector<int>();
+        for(int k = 0; k < missingNodes.length(); k++)
+        {
+            int nodeIndex;
+            if(combination & (1 << k))
+            {
+                nodeIndex =  missingNodes[k];
+            }
+            else
+            {
+                nodeIndex = -missingNodes[k];
+                combinationVector.append(missingNodes[k]);
+            }
+            appendixOperand->append(nodeIndex);
+        }
+
+        bool supersetFound = ContainsSuperset(appendixCombinationList, &combinationVector);
+
+        if(supersetFound)
+        {
+            delete appendixOperand;
+        }
+        else
+        {
+            SetUtils::CopyListContents(&presentNodes, appendixOperand);
+            conjunctionList->append(appendixOperand);
+        }
+    }
+    appendixCombinationList->append(missingNodes);
+}
+
 void DnfAnalyticalConstructor::GetPdnfConjunction(QVector<Path<NetParams> *> *pathList, QVector<QVector<int> *> *conjunctionList)
 {
     QVector<Path<NetParams>*> listClone = QVector<Path<NetParams>*>();
@@ -308,7 +364,6 @@ void DnfAnalyticalConstructor::GetPdnfConjunction(QVector<Path<NetParams> *> *pa
     QVector<int> *nodeIndexSet = new QVector<int>();
     GetNodeSet(listClone, nodeIndexSet);
 
-    //QVector<QVector<int>*> *conjunctionList = new QVector<QVector<int>*>();
     for(int i = 0; i < listClone.length(); i++)
     {
         Path<NetParams> *path = listClone.at(i);
@@ -323,59 +378,20 @@ void DnfAnalyticalConstructor::GetPdnfConjunction(QVector<Path<NetParams> *> *pa
 
     for(int i = 0; i < operandsCount; i++)
     {
-        QVector<int> *operand = conjunctionList->at(i);
-        QVector<int> presentNodes = QVector<int>();
-        QVector<int> missingNodes = QVector<int>();
-        GetSetPresentMissing(operand, &presentNodes, &missingNodes, nodeIndexSet);
-        if(missingNodes.length() == 0)
-        {
-            continue;
-        }
-        AppendInvertedNodes(operand, &missingNodes);
-
-        uint64_t combinations = (1 << missingNodes.length()) - 1;
-        for(uint64_t combination = 1; combination < combinations; combination++)
-        {
-            QVector<int> *appendixOperand = new QVector<int>();
-            QVector<int> combinationVector = QVector<int>();            
-            for(int k = 0; k < missingNodes.length(); k++)
-            {
-                int nodeIndex;
-                if(combination & (1 << k))
-                {
-                    nodeIndex =  missingNodes[k];
-                }
-                else
-                {
-                    nodeIndex = -missingNodes[k];
-                    combinationVector.append(missingNodes[k]);
-                }
-                appendixOperand->append(nodeIndex);
-            }
-            //conjunctionList->append(appendixOperand);
-            if(ContainsSuperset(&appendixCombinationList, &combinationVector))
-            {
-                delete appendixOperand;
-            }
-            else
-            {
-                SetUtils::CopyListContents(&presentNodes, appendixOperand);
-                conjunctionList->append(appendixOperand);
-            }
-        }
-
-        appendixCombinationList.append(missingNodes);
+        ProcessOperand(conjunctionList, i, nodeIndexSet, &appendixCombinationList);
     }
     conjunctionList->append(nodeIndexSet);
 
-    //QString beforeReductionStr = PrintPdnf(conjunctionList);
+    //QString afterReduction = PrintPdnf(conjunctionList);
 
-    //RemoveSupersets(conjunctionList);
-
-    QString afterReduction = PrintPdnf(conjunctionList);
-
-    QMessageBox::information(nullptr, "LogicEquation", afterReduction);
+    //QMessageBox::information(nullptr, "LogicEquation", afterReduction);
 }
+
+void DnfAnalyticalConstructor::GetPdnfConjunction(QVector<Path<NetParams> *> *pathList, QVector<QVector<int> *> *resultVectorMatrix, int threads_count)
+{
+    GetPdnfConjunction(pathList, resultVectorMatrix);
+}
+
 
 LogicEquation *DnfAnalyticalConstructor::GetPdnfTree(QVector<Path<NetParams> *> *pathList)
 {
@@ -389,10 +405,10 @@ LogicEquation *DnfAnalyticalConstructor::GetPdnfTree(QVector<Path<NetParams> *> 
     return equation;
 }
 
-LinearLogicEquation *DnfAnalyticalConstructor::GetPdnfLinear(QVector<Path<NetParams> *> *pathList)
+LinearLogicEquation *DnfAnalyticalConstructor::GetPdnfLinear(QVector<Path<NetParams> *> *pathList, int thread_count)
 {
     QVector<QVector<int> *> *conjunctionList = new QVector<QVector<int>*>();
-    GetPdnfConjunction(pathList, conjunctionList);
+    GetPdnfConjunction(pathList, conjunctionList, thread_count);
 
     LinearLogicEquation *equation = new LinearLogicEquation(conjunctionList);
 

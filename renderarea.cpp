@@ -120,7 +120,7 @@ void RenderArea::mouseReleaseEvent(QMouseEvent* event)
 		}
 		break;
 	default:
-		asm("nop");
+        break;
 	}
 
 }

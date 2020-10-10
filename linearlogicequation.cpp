@@ -44,3 +44,13 @@ double LinearLogicEquation::GetProbability(EventProbabilityProvider *provider)
 
     return probabilitySumm;
 }
+
+LinearLogicEquation::~LinearLogicEquation()
+{
+    for(int i = 0; i < conjunctionList->length(); i++)
+    {
+        delete conjunctionList->at(i);
+    }
+
+    delete conjunctionList;
+}

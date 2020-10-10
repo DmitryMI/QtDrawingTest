@@ -16,15 +16,7 @@ public:
     LinearLogicEquation(QVector<QVector<int>*> *conjunctionList);
     double GetProbability(EventProbabilityProvider* provider);
 
-    ~LinearLogicEquation()
-    {
-        for(int i = 0; i < conjunctionList->length(); i++)
-        {
-            delete conjunctionList->at(i);
-        }
-
-        delete conjunctionList;
-    }
+    ~LinearLogicEquation();
 };
 
 #endif // LINEARLOGICEQUATION_H
