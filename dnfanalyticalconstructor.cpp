@@ -1,114 +1,16 @@
 #include "dnfanalyticalconstructor.h"
+#include "setutils.h"
 
 #include <QMessageBox>
 #include <QSet>
 #include <QStack>
 
-typedef enum SetComparisonResult
-{
-    Less = -1,
-    Equal = 0,
-    Greater = 1,
-    Uncomparable = 2
-} SetComparisonResult;
 
 DnfAnalyticalConstructor::DnfAnalyticalConstructor()
 {
 
 }
 
-
-
-bool IsSubset(QSet<int> *set1, QSet<int> *set2)
-{
-    QList<int> values1 = set1->values();
-    for(int i = 0; i < values1.count(); i++)
-    {
-        int value = values1.at(i);
-        if(!set2->contains(value))
-        {
-            return false;
-            break;
-        }
-    }
-
-    return true;
-}
-
-bool IsSubset(QVector<int> *set1, QVector<int> *set2)
-{
-    for(int i = 0; i < set1->count(); i++)
-    {
-        int value = set1->at(i);
-        if(!set2->contains(value))
-        {
-            return false;
-            break;
-        }
-    }
-
-    return true;
-}
-
-SetComparisonResult CompareSets(QSet<int> *set1, QSet<int> *set2)
-{
-    bool isSubset12 = IsSubset(set1, set2);
-
-    bool isSubset21 = IsSubset(set2, set1);
-
-
-    if(isSubset12)
-    {
-        return SetComparisonResult::Less;
-    }
-    else if(isSubset12 && isSubset21)
-    {
-        return SetComparisonResult::Equal;
-    }
-    else if(isSubset21)
-    {
-        return SetComparisonResult::Greater;
-    }
-    else
-    {
-        return SetComparisonResult::Uncomparable;
-    }
-}
-
-SetComparisonResult CompareSets(QVector<int> *setVector1, QVector<int> *setVector2)
-{
-    QSet<int> set1 = QSet<int>();
-    QSet<int> set2 = QSet<int>();
-
-    for(int i = 0; i < setVector1->length(); i++)
-    {
-        set1.insert(setVector1->at(i));
-    }
-    for(int i = 0; i < setVector2->length(); i++)
-    {
-        set2.insert(setVector2->at(i));
-    }
-
-    return CompareSets(&set1, &set2);
-}
-
-
-SetComparisonResult ComparePaths(Path<NetParams> *path1, Path<NetParams> *path2)
-{
-    QSet<int> set1 = QSet<int>();
-    QSet<int> set2 = QSet<int>();
-
-    for(int i = 0; i < path1->length(); i++)
-    {
-        set1.insert(path1->at(i)->GetKey());
-    }
-    for(int i = 0; i < path2->length(); i++)
-    {
-        set2.insert(path2->at(i)->GetKey());
-    }
-
-    return CompareSets(&set1, &set2);
-}
 
 void FreeVectorMatrix(QVector<QVector<int>*> *vectorMatrix)
 {
@@ -118,42 +20,6 @@ void FreeVectorMatrix(QVector<QVector<int>*> *vectorMatrix)
     }
 
     delete vectorMatrix;
-}
-
-void RemoveComplexPaths(QVector<Path<NetParams> *> *pathList)
-{
-    for(int i = 0; i < pathList->count(); i++)
-    {
-        Path<NetParams> *current = pathList->at(i);
-        for(int j = i + 1; j < pathList->count(); j++)
-        {
-            Path<NetParams> *comparable = pathList->at(j);
-            SetComparisonResult comparisonResult = ComparePaths(current, comparable);
-
-            if(comparisonResult == SetComparisonResult::Less)
-            {
-                pathList->removeAt(j);
-                j--;
-            }
-            else if(comparisonResult == SetComparisonResult::Equal)
-            {
-                // This must not happen!
-                pathList->removeAt(i);
-                i--;
-                break;
-            }
-            else if(comparisonResult == SetComparisonResult::Greater)
-            {
-                pathList->removeAt(i);
-                i--;
-                break;
-            }
-            else
-            {
-                // Uncomparible, do nothing
-            }
-        }
-    }
 }
 
 void SortedInsertUnique(QVector<int> *nodeIndexList, int value)
@@ -238,26 +104,12 @@ void GetPathNodes(Path<NetParams> *path, QVector<int> *nodeSet, QVector<int> *pr
     }
 }
 
-int SetIndexOf(QVector<int> *set, int value)
-{
-    for(int i = 0; i < set->length(); i++)
-    {
-        int setAt = set->at(i);
-        if(setAt == value || setAt == -value)
-        {
-            return i;
-        }
-    }
-
-    return -1;
-}
-
 void GetSetPresentMissing(QVector<int> *set, QVector<int> *presentNodes, QVector<int> *missingNodes, QVector<int> *fullSet)
 {
     for(int i = 0; i < fullSet->length(); i++)
     {
         int value = fullSet->at(i);
-        int index = SetIndexOf(set, value);
+        int index = SetUtils::SetIndexOf(set, value);
         if(index == -1)
         {
             if(missingNodes != nullptr)
@@ -284,14 +136,7 @@ void AppendInvertedNodes(QVector<int> *presentNodes, QVector<int> *missingNodes)
     }
 }
 
-template <class T>
-void CopyListContents(QVector<T> *source, QVector<T> *clone)
-{
-    for(int i =0; i < source->length(); i++)
-    {
-        clone->append(source->at(i));
-    }
-}
+
 
 LogicEquationNode* BuildDisjunction(LogicEquation* equation, QVector<int>* disjunction)
 {
@@ -389,7 +234,7 @@ void RemoveSupersets( QVector<QVector<int>*> *conjunctionList)
         for(int j = i + 1; j < conjunctionList->count(); j++)
         {
             QVector<int> *comparable = conjunctionList->at(j);
-            SetComparisonResult comparisonResult = CompareSets(current, comparable);
+            SetComparisonResult comparisonResult = SetUtils::CompareSets(current, comparable);
 
             if(comparisonResult == SetComparisonResult::Less)
             {
@@ -444,7 +289,7 @@ bool ContainsSuperset(QVector<QVector<int>> *setList, QVector<int>* set)
     for(int i = 0; i < setList->length(); i++)
     {
         QVector<int> listAt = setList->at(i);
-        if(IsSubset(set, &listAt))
+        if(SetUtils::IsSubset(set, &listAt))
         {
             return true;
         }
@@ -456,9 +301,9 @@ bool ContainsSuperset(QVector<QVector<int>> *setList, QVector<int>* set)
 void DnfAnalyticalConstructor::GetPdnfConjunction(QVector<Path<NetParams> *> *pathList, QVector<QVector<int> *> *conjunctionList)
 {
     QVector<Path<NetParams>*> listClone = QVector<Path<NetParams>*>();
-    CopyListContents(pathList, &listClone);
+    SetUtils::CopyListContents(pathList, &listClone);
 
-    RemoveComplexPaths(&listClone);
+    SetUtils::RemoveComplexPaths(&listClone);
 
     QVector<int> *nodeIndexSet = new QVector<int>();
     GetNodeSet(listClone, nodeIndexSet);
@@ -514,7 +359,7 @@ void DnfAnalyticalConstructor::GetPdnfConjunction(QVector<Path<NetParams> *> *pa
             }
             else
             {
-                CopyListContents(&presentNodes, appendixOperand);
+                SetUtils::CopyListContents(&presentNodes, appendixOperand);
                 conjunctionList->append(appendixOperand);
             }
         }
@@ -527,9 +372,9 @@ void DnfAnalyticalConstructor::GetPdnfConjunction(QVector<Path<NetParams> *> *pa
 
     //RemoveSupersets(conjunctionList);
 
-    //QString afterReduction = PrintPdnf(conjunctionList);
+    QString afterReduction = PrintPdnf(conjunctionList);
 
-    //QMessageBox::information(nullptr, "LogicEquation", afterReduction);
+    QMessageBox::information(nullptr, "LogicEquation", afterReduction);
 }
 
 LogicEquation *DnfAnalyticalConstructor::GetPdnfTree(QVector<Path<NetParams> *> *pathList)

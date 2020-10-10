@@ -5,7 +5,7 @@
 #include "dnfbruteforceconstructor.h"
 #include<QDebug>
 
-#define USE_ANALYTICAL 1
+#define USE_ANALYTICAL 0
 
 
 

@@ -1,4 +1,5 @@
 #include "dnfbruteforceconstructor.h"
+#include "setutils.h"
 
 DnfBruteforceConstructor::DnfBruteforceConstructor()
 {
@@ -121,9 +122,14 @@ void DnfBruteforceConstructor::Construct(LogicEquation* equation, QVector<Path<N
 }
 
 LogicEquation* DnfBruteforceConstructor::GetPdnf(QVector<Path<NetParams>*> *pathList)
-{
+{    
+    QVector<Path<NetParams>*> listClone = QVector<Path<NetParams>*>();
+    SetUtils::CopyListContents(pathList, &listClone);
+
+    SetUtils::RemoveComplexPaths(&listClone);
+
     LogicEquation *dnf = new LogicEquation();
-    Construct(dnf, pathList);
+    Construct(dnf, &listClone);
     LogicEquation *pdnf = GetPerfectDisjunctiveNormalForm(dnf);
     delete dnf;
 

@@ -28,7 +28,8 @@ SOURCES += \
     main.cpp \
     mainwindow.cpp \
     recursivesearcher.cpp \
-    renderarea.cpp
+    renderarea.cpp \
+    setutils.cpp
 
 HEADERS += \
     calculator.h \
@@ -49,7 +50,8 @@ HEADERS += \
     probabilityprovider.h \
     recursivesearcher.h \
     renderarea.h \
-    searcherbase.h
+    searcherbase.h \
+    setutils.h
 
 FORMS += \
     mainwindow.ui
