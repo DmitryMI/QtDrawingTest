@@ -1,13 +1,12 @@
+#define USE_THREADS 1
+#define USE_ANALYTICAL 1
+
 #include "calculator.h"
 #include "grapheventprobabilityprovider.h"
 #include "logicequation.h"
 #include "dnfanalyticalconstructor.h"
 #include "dnfbruteforceconstructor.h"
 #include<QDebug>
-
-#define USE_ANALYTICAL 0
-
-
 
 #define DELETE_VECTOR(vec) \
 	for(int i = 0; i < vec->length(); i++)	\
@@ -35,7 +34,7 @@ double Calculator::GetMathematicalProbability(Graph<NetParams> *graph)
     double result;
 #if USE_ANALYTICAL == 1
     //LogicEquation *analitycallyDerivedEquation = DnfAnalyticalConstructor::GetPdnf(pathList);
-    LinearLogicEquation *analitycallyDerivedEquation = DnfAnalyticalConstructor::GetPdnfLinear(pathList);
+    LinearLogicEquation *analitycallyDerivedEquation = DnfAnalyticalConstructor::GetPdnfLinear(pathList, 4);
     double analitycallyDerivedResult = analitycallyDerivedEquation->GetProbability(provider);
     result = analitycallyDerivedResult;
 #else
