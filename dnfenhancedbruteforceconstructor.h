@@ -32,6 +32,8 @@ class DnfEnhancedBruteforceConstructor
     static int SkipSubsetCombinations(uint64_t combination);
 
     static void GetNodeSet(QVector<Path<NetParams>*> pathList, QVector<int> *nodeIndexList);
+
+    static void GetSimplePathMasks(QVector<Path<NetParams>*> *pathList, QVector<int> *pathMasks);
 public:
     static LinearLogicEquation *GetPdnfLinear(QVector<Path<NetParams>*> *pathList, int thread_count = 1);
 };

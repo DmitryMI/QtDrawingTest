@@ -14,6 +14,7 @@ DnfEnhancedBruteforceConstructor::DnfEnhancedBruteforceConstructor()
 
 void DnfEnhancedBruteforceConstructor::GetPdnfConjunction(QVector<Path<NetParams> *> *pathList, QVector<QVector<int> *> *resultVectorMatrix, int threads_count)
 {
+
     QVector<Path<NetParams>*> listClone = QVector<Path<NetParams>*>();
     SetUtils::CopyListContents(pathList, &listClone);
     SetUtils::RemoveComplexPaths(&listClone);
@@ -22,6 +23,7 @@ void DnfEnhancedBruteforceConstructor::GetPdnfConjunction(QVector<Path<NetParams
     GetNodeSet(listClone, nodeIndexSet);
 
     uint64_t *pathMasks = new uint64_t[listClone.length()];
+
     GetPathMasks(&listClone, pathMasks);
 
     QVector<uint64_t> conjunctionList = QVector<uint64_t>();
