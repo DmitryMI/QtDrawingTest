@@ -19,6 +19,7 @@ SOURCES += \
     calculator.cpp \
     dnfanalyticalconstructor.cpp \
     dnfbruteforceconstructor.cpp \
+    dnfenhancedbruteforceconstructor.cpp \
     graph.cpp \
     grapheventprobabilityprovider.cpp \
     intpair.cpp \
@@ -35,6 +36,7 @@ HEADERS += \
     calculator.h \
     dnfanalyticalconstructor.h \
     dnfbruteforceconstructor.h \
+    dnfenhancedbruteforceconstructor.h \
     eventprobabilityprovider.h \
     graph.h \
     grapheventprobabilityprovider.h \

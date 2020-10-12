@@ -42,6 +42,10 @@ public:
     }
 
     static int SetIndexOf(QVector<int> *set, int value);
+
+    static void SortedInsertUnique(QVector<int> *nodeIndexList, int value);
+
+    static void FreeVectorMatrix(QVector<QVector<int>*> *vectorMatrix);
 };
 
 #endif // SETUTILS_H

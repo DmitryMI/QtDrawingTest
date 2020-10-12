@@ -139,3 +139,42 @@ int SetUtils::SetIndexOf(QVector<int> *set, int value)
 
     return -1;
 }
+
+void SetUtils::SortedInsertUnique(QVector<int> *nodeIndexList, int value)
+{
+    if(nodeIndexList->length() == 0)
+    {
+        nodeIndexList->append(value);
+        return;
+    }
+
+    int index = 0;
+    while(index < nodeIndexList->length())
+    {
+        int valueAt = nodeIndexList->at(index);
+        int comparison = value - valueAt;
+        if(comparison > 0)
+        {
+            index++;
+        }
+        else if(comparison < 0)
+        {
+            break;
+        }
+        else
+        {
+            return;
+        }
+    }
+    nodeIndexList->insert(index, value);
+}
+
+void SetUtils::FreeVectorMatrix(QVector<QVector<int> *> *vectorMatrix)
+{
+    for(int i = 0; i < vectorMatrix->length(); i++)
+    {
+        delete (vectorMatrix->at(i));
+    }
+
+    delete vectorMatrix;
+}
