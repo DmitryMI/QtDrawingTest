@@ -73,21 +73,81 @@ SetComparisonResult SetUtils::CompareSets(QVector<int> *setVector1, QVector<int>
     return CompareSets(&set1, &set2);
 }
 
+int PathIndexOf( Path<NetParams> *path, int start, int end, int key)
+{
+    for(int j = start; j < end; j++)
+    {
+        auto node2 = path->at(j);
+        int key2 = node2->GetKey();
+        if(key == key2)
+        {
+           return j;
+        }
+    }
+
+    return -1;
+}
+
+bool IsPathSubset(Path<NetParams> *path1, Path<NetParams> *possibleSubset)
+{
+    for(int i = 1; i < path1->length(); i++)
+    {
+        auto node1 = path1->at(i);
+        int key1 = node1->GetKey();
+
+        int indexOf = PathIndexOf(possibleSubset, 1, possibleSubset->length(), key1);
+
+        if(indexOf == -1)
+        {
+            return false;
+        }
+    }
+
+    return true;
+}
+
 SetComparisonResult SetUtils::ComparePaths(Path<NetParams> *path1, Path<NetParams> *path2)
 {
     QSet<int> set1 = QSet<int>();
     QSet<int> set2 = QSet<int>();
 
-    for(int i = 0; i < path1->length(); i++)
+    for(int i = 1; i < path1->length() - 1; i++)
     {
         set1.insert(path1->at(i)->GetKey());
     }
-    for(int i = 0; i < path2->length(); i++)
+    for(int i = 1; i < path2->length() - 1; i++)
     {
         set2.insert(path2->at(i)->GetKey());
     }
 
     return CompareSets(&set1, &set2);
+/*
+    bool subset12 = IsPathSubset(path1, path2);
+    bool subset21 = IsPathSubset(path2, path1);
+
+    if(subset12 && subset21)
+    {
+        return SetComparisonResult::Equal;
+    }
+
+    if(subset12 && !subset21)
+    {
+        return Greater;
+    }
+
+    if(!subset12 && subset21)
+    {
+        return SetComparisonResult::Less;
+    }
+
+    if(!subset12 && !subset21)
+    {
+        return SetComparisonResult::Uncomparable;
+    }
+
+    return SetComparisonResult::Uncomparable;
+
+    */
 }
 
 void SetUtils::RemoveComplexPaths(QVector<Path<NetParams> *> *pathList)
